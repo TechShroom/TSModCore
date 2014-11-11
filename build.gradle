@@ -45,6 +45,8 @@ configFile.withReader {
 
 dependencies {
     compile "codechicken:CodeChickenLib:${config.mc.version}-${config.ccl.version}:dev"
+    
+    testCompile "junit:junit:4.+"
 }
 
 def build_number = (System.getenv("BUILD_NUMBER") ?: "1")
@@ -69,6 +71,12 @@ sourceSets {
         }
         resources {
             srcDir new File(root, "resources")
+        }
+    }
+    test {
+        def root = project.projectDir
+        java {
+            srcDir new File(root, "test")
         }
     }
 }
