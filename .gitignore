@@ -38,7 +38,6 @@ options.txt
 *.blend1
 *.blend2
 #libs
-/libs/
 /assets/
 /out/
 /crash-reports/
