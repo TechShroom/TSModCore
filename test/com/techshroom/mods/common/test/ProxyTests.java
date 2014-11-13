@@ -15,16 +15,4 @@ public class ProxyTests {
         underTest = new Proxy() {
         };
     }
-
-    @Test
-    public void proxyThrowOkay() throws Exception {
-        try {
-            underTest.testThrow();
-        } catch (RuntimeException expected) {
-            String[] split = Proxy.class.getName().split("\\.");
-            assertTrue(expected.getMessage()
-                    .startsWith(Proxy.class.getName() + ".testThrow("
-                                        + split[split.length - 1] + ".java:"));
-        }
-    }
 }
