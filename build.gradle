@@ -116,56 +116,12 @@ processResources {
         include 'assets/**/*.*'
     }
 }
-
-// Short-hand variable
 ext.jarVer = "${project.minecraft.version}-${project.version}"
-// Output of reobf task
-ext.jarFile = reobf.outputs.files.each{}.collect{ zipTree(it) }
-// Files to not include in baseJar
-ext.baseExcludes = []
-
-task exampleTaskDoNotRunJar(type: Jar, dependsOn: reobf) {
-    from (project.ext.jarFile) {
-        include "stuff here"
-        rename ("ext_info.info", 'mcmod.info')
-
-        project.ext.baseExcludes.addAll(includes)
-    }
-    manifest {
-        attributes 'FMLCorePlugin': 'codechicken.core.launch.DepLoader'
-        attributes 'FMLCorePluginContainsFMLMod': 'true'
-    }
-    version = project.ext.jarVer
-    appendix = 'name'
-}
-
-task baseJar(type: Jar, dependsOn: reobf) {
-    from (project.ext.jarFile) {
-        exclude project.ext.baseExcludes
-    }
-    manifest {
-        attributes 'FMLCorePlugin': 'codechicken.core.launch.DepLoader'
-        attributes 'FMLCorePluginContainsFMLMod': 'true'
-    }
-    version = project.ext.jarVer
-    appendix = ''
-}
-
-// baseJar pulls all files not in any other jar. Therefore must run last
-baseJar.mustRunAfter { tasks.findAll { task -> (task.name.endsWith('Jar') && !task.name.equals('baseJar')) } }
-
-gradle.taskGraph.afterTask { task, TaskState state ->
-    if (task == baseJar) {
-        // Delete original jar now it has been split into separate jars.
-        reobf.outputs.files.each{delete it}
-    }
-}
-
 // Add in a source jar for people, should they desire to download such a thing
 task sourceJar(type: Jar) {
     from sourceSets.main.allSource
     classifier = 'sources'
-    version = "${project.minecraft.version}-${project.version}"
+    version = project.ext.jarVer
 }
 
 // Add in an mcp named jar, for those who wish to run in a development environment (assuming mcp naming matches)
@@ -181,15 +137,15 @@ task sourceJar(type: Jar) {
 
 // Tell the artifact system about our extra jars
 artifacts {
-    archives baseJar
+    archives sourceJar
 }
 
 apply plugin: 'maven-publish'
 publishing {
     publications {
         mavenJava(MavenPublication) {
+            from components.java
             artifact sourceJar
-            artifact baseJar
         }
     }
 }
