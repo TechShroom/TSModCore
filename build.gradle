@@ -162,11 +162,11 @@ gradle.taskGraph.afterTask { task, TaskState state ->
 }
 
 // Add in a source jar for people, should they desire to download such a thing
-//task sourceJar(type: Jar) {
-//    from sourceSets.main.allSource
-//    classifier = 'src'
-//    version = "${project.minecraft.version}-${project.version}"
-//}
+task sourceJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+    version = "${project.minecraft.version}-${project.version}"
+}
 
 // Add in an mcp named jar, for those who wish to run in a development environment (assuming mcp naming matches)
 //task deobfJar(type: Jar) {
@@ -188,8 +188,8 @@ apply plugin: 'maven-publish'
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifact baseJar {
-            }
+            artifact sourceJar
+            artifact baseJar
         }
     }
 }
