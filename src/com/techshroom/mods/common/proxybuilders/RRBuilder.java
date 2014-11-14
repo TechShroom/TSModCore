@@ -2,6 +2,7 @@ package com.techshroom.mods.common.proxybuilders;
 
 import static com.google.common.base.Preconditions.*;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,7 +21,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.techshroom.mods.common.Proxy.State;
-import com.techshroom.mods.common.proxybuilders.RRBuilder.ShapedRecipeExtension.EasyShapedRecipeBuilder.DesignStep;
 import com.techshroom.tscore.util.stepbuilder.FinalStep;
 import com.techshroom.tscore.util.stepbuilder.Step;
 import com.techshroom.tscore.util.stepbuilder.StepBuilder;
@@ -129,8 +129,9 @@ public abstract class RRBuilder<RecipeType> implements
 
     public static class ShapedRecipeExtension
             extends IRecipeExtension<ShapedOreRecipe> {
-        public static class EasyShapedRecipeBuilder implements
-                StepBuilder<ShapedRecipeExtension, DesignStep> {
+        public static class EasyShapedRecipeBuilder
+                implements
+                StepBuilder<ShapedRecipeExtension, EasyShapedRecipeBuilder.DesignStep> {
             private final String[][] recipeGrid;
             private final int rows, cols;
             private Map<Character, Object> links = Maps.newHashMap();
@@ -141,8 +142,9 @@ public abstract class RRBuilder<RecipeType> implements
                 recipeGrid = new String[rows][cols];
             }
 
-            public class DesignStep implements
-                    Step<ShapedRecipeExtension, LinkStep> {
+            public class DesignStep
+                    implements
+                    Step<ShapedRecipeExtension, EasyShapedRecipeBuilder.LinkStep> {
                 private boolean immutable = false;
 
                 private DesignStep() {
@@ -152,21 +154,26 @@ public abstract class RRBuilder<RecipeType> implements
                     checkState(!immutable, "Immutable");
                 }
 
-                public void setRow(int row, String[] rowContent) {
+                public EasyShapedRecipeBuilder.DesignStep setRow(int row,
+                        String[] rowContent) {
                     checkArgument(cols == rowContent.length, "unequal cols");
                     checkImmutablity();
                     recipeGrid[row] = rowContent;
+                    return this;
                 }
 
-                public void setRow(int row, String rowContent) {
+                public EasyShapedRecipeBuilder.DesignStep setRow(int row,
+                        String rowContent) {
                     checkArgument(cols == rowContent.length(), "unequal cols");
                     checkImmutablity();
-                    setRow(row, rowContent.split(""));
+                    return setRow(row, rowContent.split(""));
                 }
 
-                public void set(int x, int y, String val) {
+                public EasyShapedRecipeBuilder.DesignStep set(int x, int y,
+                        String val) {
                     checkImmutablity();
                     recipeGrid[x][y] = val;
+                    return this;
                 }
 
                 public LinkStep startLink() {
@@ -185,20 +192,22 @@ public abstract class RRBuilder<RecipeType> implements
                     return links;
                 }
 
-                public void link(char c, String dict) {
+                public LinkStep link(char c, String dict) {
                     links.put(c, dict);
+                    return this;
                 }
 
-                public void link(char c, ItemStack stack) {
+                public LinkStep link(char c, ItemStack stack) {
                     links.put(c, stack);
+                    return this;
                 }
 
-                public void link(char c, Block block) {
-                    link(c, new ItemStack(block));
+                public LinkStep link(char c, Block block) {
+                    return link(c, new ItemStack(block));
                 }
 
-                public void link(char c, Item item) {
-                    link(c, new ItemStack(item));
+                public LinkStep link(char c, Item item) {
+                    return link(c, new ItemStack(item));
                 }
 
                 public FinalStep<ShapedRecipeExtension> step() {
@@ -243,21 +252,24 @@ public abstract class RRBuilder<RecipeType> implements
             return result;
         }
 
-        public void setResult(ItemStack result) {
+        public ShapedRecipeExtension setResult(ItemStack result) {
             this.result = result;
+            return this;
         }
 
         public LinkedList<Object> getInputStack() {
             return inputStack;
         }
 
-        public void setInputStack(Collection<Object> stack) {
+        public ShapedRecipeExtension setInputStack(Collection<Object> stack) {
             inputStack.clear();
             inputStack.addAll(stack);
+            return this;
         }
 
-        public void push(Object o) {
+        public ShapedRecipeExtension push(Object o) {
             inputStack.push(o);
+            return this;
         }
 
         @Override
@@ -284,6 +296,21 @@ public abstract class RRBuilder<RecipeType> implements
                 private DesignStep() {
                 }
 
+                public EasyShapelessRecipeBuilder.DesignStep add(String bit) {
+                    return addAll(bit);
+                }
+
+                public EasyShapelessRecipeBuilder.DesignStep addAll(
+                        String... bits) {
+                    return addAll(Arrays.asList(bits));
+                }
+
+                public EasyShapelessRecipeBuilder.DesignStep addAll(
+                        Collection<String> bits) {
+                    recipe.addAll(bits);
+                    return this;
+                }
+
                 public List<String> recipe() {
                     return recipe;
                 }
@@ -304,23 +331,25 @@ public abstract class RRBuilder<RecipeType> implements
                     return links;
                 }
 
-                public void link(char c, String dict) {
+                public LinkStep link(char c, String dict) {
                     links.put(c, dict);
+                    return this;
                 }
 
-                public void link(char c, ItemStack stack) {
+                public LinkStep link(char c, ItemStack stack) {
                     links.put(c, stack);
+                    return this;
                 }
 
-                public void link(char c, Block block) {
-                    link(c, new ItemStack(block));
+                public LinkStep link(char c, Block block) {
+                    return link(c, new ItemStack(block));
                 }
 
-                public void link(char c, Item item) {
-                    link(c, new ItemStack(item));
+                public LinkStep link(char c, Item item) {
+                    return link(c, new ItemStack(item));
                 }
 
-                public FinalStep<ShapelessRecipeExtension> step() {
+                public FinalStep<ShapelessRecipeExtension> prep() {
                     links = ImmutableMap.copyOf(links);
                     return new FinalStep<ShapelessRecipeExtension>() {
                         @Override
@@ -359,21 +388,24 @@ public abstract class RRBuilder<RecipeType> implements
             return result;
         }
 
-        public void setResult(ItemStack result) {
+        public ShapelessRecipeExtension setResult(ItemStack result) {
             this.result = result;
+            return this;
         }
 
         public LinkedList<Object> getInputStack() {
             return inputStack;
         }
 
-        public void setInputStack(Collection<Object> stack) {
+        public ShapelessRecipeExtension setInputStack(Collection<Object> stack) {
             inputStack.clear();
             inputStack.addAll(stack);
+            return this;
         }
 
-        public void push(Object o) {
+        public ShapelessRecipeExtension push(Object o) {
             inputStack.push(o);
+            return this;
         }
 
         @Override
