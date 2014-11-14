@@ -183,3 +183,13 @@ gradle.taskGraph.afterTask { task, TaskState state ->
 artifacts {
     archives baseJar
 }
+
+apply plugin: 'maven-publish'
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifact baseJar {
+            }
+        }
+    }
+}
