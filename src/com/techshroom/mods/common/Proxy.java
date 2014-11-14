@@ -41,12 +41,17 @@ public abstract class Proxy {
     }
 
     /**
-     * Attach a proxy to {@link MinecraftForge#EVENT_BUS}.
+     * Attach a proxy to {@link MinecraftForge#EVENT_BUS}. Called by
+     * {@code Proxy.<init>}.
      * 
      * @param p
      */
-    public static void attachProxy(Proxy p) {
+    private final static void attachProxy(Proxy p) {
         MinecraftForge.EVENT_BUS.register(p);
+    }
+
+    {
+        attachProxy(this);
     }
 
     private final Multimap<State, RegisterableObject<?>> builders =
