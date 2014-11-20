@@ -22,13 +22,13 @@ public interface RegisterableObject<Type> {
     State registerState();
 
     /**
-     * Creates the Type bound to this object.
+     * Creates the Type bound to this object. Implementers: Don't register the
+     * object in this method.
      * 
      * @return the created object of type Type.
      * 
      * @throws Throwable
      *             exceptions propagate
-     * @apiNote don't register here
      */
     Type create() throws Throwable;
 
