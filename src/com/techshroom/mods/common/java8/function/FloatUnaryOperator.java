@@ -31,6 +31,10 @@ public interface FloatUnaryOperator {
      * {@code Float.compare(a, b) == 0} implies that
      * {@code Float.compare(function.apply(a), function.apply(b)) == 0}.
      * </ul>
+     * 
+     * @param input
+     *            - input
+     * @return float result
      */
     float applyAsFloat(float input);
 }

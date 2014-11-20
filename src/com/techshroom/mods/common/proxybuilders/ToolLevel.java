@@ -1,8 +1,21 @@
 package com.techshroom.mods.common.proxybuilders;
 
+/**
+ * ToolLevel values.
+ * 
+ * @author Kenzie Togami
+ */
 public abstract class ToolLevel {
+    /**
+     * Wood.
+     * 
+     * @author Kenzie Togami
+     */
     public static abstract class Wood
             extends ToolLevel {
+        /**
+         * Singleton.
+         */
         public static final ToolLevel.Wood TYPE = new Wood() {
         };
 
@@ -15,8 +28,16 @@ public abstract class ToolLevel {
         }
     }
 
+    /**
+     * Good.
+     * 
+     * @author Kenzie Togami
+     */
     public static abstract class Gold
             extends ToolLevel.Wood {
+        /**
+         * Singleton.
+         */
         public static final ToolLevel.Gold TYPE = new Gold() {
         };
 
@@ -24,8 +45,16 @@ public abstract class ToolLevel {
         }
     }
 
+    /**
+     * Stone.
+     * 
+     * @author Kenzie Togami
+     */
     public static abstract class Stone
             extends ToolLevel {
+        /**
+         * Singleton.
+         */
         public static final ToolLevel.Stone TYPE = new Stone() {
         };
 
@@ -38,8 +67,16 @@ public abstract class ToolLevel {
         }
     }
 
+    /**
+     * Iron.
+     * 
+     * @author Kenzie Togami
+     */
     public static abstract class Iron
             extends ToolLevel {
+        /**
+         * Singleton.
+         */
         public static final ToolLevel.Iron TYPE = new Iron() {
         };
 
@@ -52,8 +89,16 @@ public abstract class ToolLevel {
         }
     }
 
+    /**
+     * Diamond.
+     * 
+     * @author Kenzie Togami
+     */
     public static abstract class Diamond
             extends ToolLevel {
+        /**
+         * Singleton.
+         */
         public static final ToolLevel.Diamond TYPE = new Diamond() {
         };
 
@@ -69,6 +114,9 @@ public abstract class ToolLevel {
     private ToolLevel() {
     }
 
+    /**
+     * @return corresponding int level
+     */
     public abstract int level();
 
     @Override

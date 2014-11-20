@@ -27,6 +27,12 @@ import com.techshroom.tscore.util.stepbuilder.StepBuilder;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 
+/**
+ * @author Kenzie Togami
+ *
+ * @param <RecipeType>
+ *            - Type of recipe class result
+ */
 public abstract class RRBuilder<RecipeType> implements
         RegisterableObject<RecipeType> {
     public static class IRecipeExtension<IRecipeType extends IRecipe>
@@ -114,11 +120,11 @@ public abstract class RRBuilder<RecipeType> implements
                 ItemStack stack = (ItemStack) input;
                 GameRegistry.addSmelting(stack, result, xp);
             } else if (input instanceof Block) {
-                Block stack = (Block) input;
-                GameRegistry.addSmelting(stack, result, xp);
+                Block block = (Block) input;
+                GameRegistry.addSmelting(block, result, xp);
             } else if (input instanceof Item) {
-                Item stack = (Item) input;
-                GameRegistry.addSmelting(stack, result, xp);
+                Item item = (Item) input;
+                GameRegistry.addSmelting(item, result, xp);
             } else {
                 throw new IllegalArgumentException(
                         "not handled (did someone try to reflect?): "

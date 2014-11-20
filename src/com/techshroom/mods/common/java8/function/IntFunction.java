@@ -15,6 +15,8 @@ import com.google.common.annotations.GwtCompatible;
  * of {@code Function}</a> for tips on how to similarly use {@code IntFunction}.
  *
  * @author Kenzie Togami
+ * @param <T>
+ *            - result type
  */
 @GwtCompatible
 public interface IntFunction<T> {
@@ -29,6 +31,10 @@ public interface IntFunction<T> {
      * {@code a == b} implies that
      * {@code Objects.equals(function.apply(a), function.apply(b))}.
      * </ul>
+     * 
+     * @param input
+     *            - input
+     * @return result
      */
     T apply(int input);
 }

@@ -16,6 +16,8 @@ import com.google.common.annotations.GwtCompatible;
  * {@code FloatFunction}.
  *
  * @author Kenzie Togami
+ * @param <T>
+ *            - result type
  */
 @GwtCompatible
 public interface FloatFunction<T> {
@@ -31,6 +33,10 @@ public interface FloatFunction<T> {
      * {@code Float.compare(a, b) == 0} implies that
      * {@code Objects.equals(function.apply(a), function.apply(b))}.
      * </ul>
+     * 
+     * @param input
+     *            - input
+     * @return result
      */
     T apply(float input);
 }

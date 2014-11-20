@@ -49,6 +49,8 @@ public final class IntOperators {
 
     /**
      * Returns the identity function.
+     * 
+     * @return f(x) = x
      */
     public static IntUnaryOperator identity() {
         return IdentityOperator.INSTANCE;
@@ -80,6 +82,10 @@ public final class IntOperators {
      * (or can be one), you can use
      * {@link com.google.common.collect.Maps#asConverter Maps.asConverter}
      * instead to get a function that also supports reverse conversion.
+     * 
+     * @param map
+     *            - map to use
+     * @return f(x) = map.get(x)
      */
     public static <K> ToIntFunction<K> forMap(Map<K, Integer> map) {
         return new ToIntFunctionForMapNoDefault<K>(map);
@@ -305,7 +311,9 @@ public final class IntOperators {
      * Returns a function that always returns the result of invoking
      * {@link IntSupplier#get} on {@code supplier}, regardless of its input.
      * 
-     * @since 10.0
+     * @param supplier
+     *            - supplier
+     * @return f(x) = supplier.get()
      */
     @Beta
     public static IntUnaryOperator forSupplier(IntSupplier supplier) {

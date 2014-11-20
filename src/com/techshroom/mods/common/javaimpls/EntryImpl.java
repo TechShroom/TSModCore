@@ -15,6 +15,15 @@ import com.google.common.base.Objects;
  *            - value type
  */
 public final class EntryImpl<K, V> implements Entry<K, V> {
+    /**
+     * Create a new Entry.
+     * 
+     * @param key
+     *            - key
+     * @param value
+     *            - value
+     * @return Entry(key, value)
+     */
     public static final <K, V> Entry<K, V> createEntry(K key, V value) {
         return new EntryImpl<K, V>(key, value);
     }

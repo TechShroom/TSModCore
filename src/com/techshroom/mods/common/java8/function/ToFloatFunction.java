@@ -1,14 +1,14 @@
 package com.techshroom.mods.common.java8.function;
 
 import com.google.common.annotations.GwtCompatible;
-import com.google.common.base.Functions;
 import com.google.common.base.Objects;
 
 /**
  * Determines an output value based on an input value.
  *
  * <p>
- * The {@link Functions} class provides common functions and related utilities.
+ * The {@link FloatOperators} class provides common functions and related
+ * utilities.
  *
  * <p>
  * See the Guava User Guide article on <a href=
@@ -17,6 +17,8 @@ import com.google.common.base.Objects;
  * {@code ToFloatFunction}.
  *
  * @author Kenzie Togami
+ * @param <T>
+ *            input type
  */
 @GwtCompatible
 public interface ToFloatFunction<T> {
@@ -32,6 +34,10 @@ public interface ToFloatFunction<T> {
      * {@link Float#compare(float, float) Float.compare}
      * {@code (function.apply(a), function.apply(b)) == 0}.
      * </ul>
+     * 
+     * @param input
+     *            - input
+     * @return float result
      *
      * @throws NullPointerException
      *             if {@code input} is null and this function does not accept

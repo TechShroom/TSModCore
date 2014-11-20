@@ -1,8 +1,21 @@
 package com.techshroom.mods.common.proxybuilders;
 
+/**
+ * Tool type values.
+ * 
+ * @author Kenzie Togami
+ */
 public abstract class ToolType {
+    /**
+     * Pickaxe.
+     * 
+     * @author Kenzie Togami
+     */
     public static abstract class Pickaxe
             extends ToolType {
+        /**
+         * Singleton.
+         */
         public static final ToolType.Pickaxe TYPE = new Pickaxe() {
         };
 
@@ -15,8 +28,16 @@ public abstract class ToolType {
         }
     }
 
+    /**
+     * Axe.
+     * 
+     * @author Kenzie Togami
+     */
     public static abstract class Axe
             extends ToolType {
+        /**
+         * Singleton.
+         */
         public static final ToolType.Axe TYPE = new Axe() {
         };
 
@@ -29,8 +50,16 @@ public abstract class ToolType {
         }
     }
 
+    /**
+     * Shovel.
+     * 
+     * @author Kenzie Togami
+     */
     public static abstract class Shovel
             extends ToolType {
+        /**
+         * Singleton.
+         */
         public static final ToolType.Shovel TYPE = new Shovel() {
         };
 
@@ -43,8 +72,16 @@ public abstract class ToolType {
         }
     }
 
+    /**
+     * Hoe.
+     * 
+     * @author Kenzie Togami
+     */
     public static abstract class Hoe
             extends ToolType {
+        /**
+         * Singleton.
+         */
         public static final ToolType.Hoe TYPE = new Hoe() {
         };
 
@@ -57,8 +94,16 @@ public abstract class ToolType {
         }
     }
 
+    /**
+     * Sword.
+     * 
+     * @author Kenzie Togami
+     */
     public static abstract class Sword
             extends ToolType {
+        /**
+         * Singleton.
+         */
         public static final ToolType.Sword TYPE = new Sword() {
         };
 
@@ -74,6 +119,9 @@ public abstract class ToolType {
     private ToolType() {
     }
 
+    /**
+     * @return name of type
+     */
     public abstract String name();
 
     @Override

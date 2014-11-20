@@ -50,6 +50,8 @@ public final class FloatOperators {
 
     /**
      * Returns the identity function.
+     * 
+     * @return f(x) = x
      */
     public static FloatUnaryOperator identity() {
         return IdentityOperator.INSTANCE;
@@ -81,13 +83,17 @@ public final class FloatOperators {
      * (or can be one), you can use
      * {@link com.google.common.collect.Maps#asConverter Maps.asConverter}
      * instead to get a function that also supports reverse conversion.
+     * 
+     * @param map
+     *            - map to use
+     * @return f(x) = map.get(x)
      */
     public static <K> ToFloatFunction<K> forMap(Map<K, Float> map) {
         return new ToFloatFunctionForMapNoDefault<K>(map);
     }
 
     private static class ToFloatFunctionForMapNoDefault<K> implements
-    ToFloatFunction<K>, Serializable {
+            ToFloatFunction<K>, Serializable {
         final Map<K, Float> map;
 
         ToFloatFunctionForMapNoDefault(Map<K, Float> map) {
@@ -140,16 +146,16 @@ public final class FloatOperators {
      *         or {@code defaultValue} otherwise
      */
     public static <K> ToFloatFunction<K> forMap(Map<K, Float> map,
-            int defaultValue) {
+            float defaultValue) {
         return new ToIntFunctionForMapWithDefault<K>(map, defaultValue);
     }
 
     private static class ToIntFunctionForMapWithDefault<K> implements
             ToFloatFunction<K>, Serializable {
         final Map<K, Float> map;
-        final int defaultValue;
+        final float defaultValue;
 
-        ToIntFunctionForMapWithDefault(Map<K, Float> map, int defaultValue) {
+        ToIntFunctionForMapWithDefault(Map<K, Float> map, float defaultValue) {
             this.map = checkNotNull(map);
             this.defaultValue = defaultValue;
         }
@@ -268,8 +274,8 @@ public final class FloatOperators {
         return new ConstantFloatUnaryOperator(value);
     }
 
-    private static class ConstantFloatUnaryOperator implements FloatUnaryOperator,
-            Serializable {
+    private static class ConstantFloatUnaryOperator implements
+            FloatUnaryOperator, Serializable {
         private final int value;
 
         public ConstantFloatUnaryOperator(int value) {
@@ -284,7 +290,8 @@ public final class FloatOperators {
         @Override
         public boolean equals(Object obj) {
             if (obj instanceof ConstantFloatUnaryOperator) {
-                ConstantFloatUnaryOperator that = (ConstantFloatUnaryOperator) obj;
+                ConstantFloatUnaryOperator that =
+                        (ConstantFloatUnaryOperator) obj;
                 return Float.compare(value, that.value) == 0;
             }
             return false;
@@ -307,7 +314,9 @@ public final class FloatOperators {
      * Returns a function that always returns the result of invoking
      * {@link FloatSupplier#get} on {@code supplier}, regardless of its input.
      * 
-     * @since 10.0
+     * @param supplier
+     *            - supplier
+     * @return f(x) = supplier.get()
      */
     @Beta
     public static FloatUnaryOperator forSupplier(FloatSupplier supplier) {
@@ -315,8 +324,8 @@ public final class FloatOperators {
     }
 
     /** @see FloatOperators#forSupplier */
-    private static class SupplierFloatUnaryOperator implements FloatUnaryOperator,
-            Serializable {
+    private static class SupplierFloatUnaryOperator implements
+            FloatUnaryOperator, Serializable {
 
         private final FloatSupplier supplier;
 
@@ -332,7 +341,8 @@ public final class FloatOperators {
         @Override
         public boolean equals(Object obj) {
             if (obj instanceof SupplierFloatUnaryOperator) {
-                SupplierFloatUnaryOperator that = (SupplierFloatUnaryOperator) obj;
+                SupplierFloatUnaryOperator that =
+                        (SupplierFloatUnaryOperator) obj;
                 return this.supplier.equals(that.supplier);
             }
             return false;

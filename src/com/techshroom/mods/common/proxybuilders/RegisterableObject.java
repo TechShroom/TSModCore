@@ -5,6 +5,14 @@ import com.techshroom.mods.common.Proxy.State;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
+/**
+ * Represents an object that can be registered, probably with Minecraft.
+ * 
+ * @author Kenzie Togami
+ *
+ * @param <Type>
+ *            - stored type
+ */
 public interface RegisterableObject<Type> {
     /**
      * The State at which the handler should call {@link #register()}.
@@ -14,10 +22,13 @@ public interface RegisterableObject<Type> {
     State registerState();
 
     /**
-     * Creates the Type bound to this object. Do not register here!
+     * Creates the Type bound to this object.
+     * 
+     * @return the created object of type Type.
      * 
      * @throws Throwable
      *             exceptions propagate
+     * @apiNote don't register here
      */
     Type create() throws Throwable;
 

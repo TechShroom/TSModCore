@@ -9,8 +9,8 @@ import com.techshroom.mods.common.java8.function.IntUnaryOperator;
 import com.techshroom.mods.common.java8.supplier.IntSupplier;
 
 /**
- * An immutable object that may contain a reference to an integer. Each instance
- * of this type either contains an integer, or contains nothing.
+ * An immutable object that may contain an integer. Each instance of this type
+ * either contains an integer, or contains nothing.
  *
  * <p>
  * An {@code OptionalInt} reference can be used as a replacement for a special
@@ -19,7 +19,7 @@ import com.techshroom.mods.common.java8.supplier.IntSupplier;
  * your program, which can aid clarity.
  *
  * <p>
- * Some uses of this class include
+ * Some uses of this class include:
  *
  * <ul>
  * <li>As a method return type, as an alternative to returning a special value
@@ -161,15 +161,20 @@ public abstract class OptionalInt implements Serializable {
     }
 
     /**
-     * Returns an {@code Optional} instance with no contained reference.
+     * Returns an {@code OptionalInt} instance with no contained integer.
+     * 
+     * @return an OptionalInt with no value.
      */
     public static OptionalInt absent() {
         return Absent.INSTANCE;
     }
 
     /**
-     * Returns an {@code Optional} instance containing the given non-null
-     * reference.
+     * Returns an {@code OptionalInt} instance containing the given integer.
+     * 
+     * @param value
+     *            - value to wrap
+     * @return an OptionalInt containing the given value
      */
     public static OptionalInt of(int value) {
         return new Present(value);
@@ -179,13 +184,17 @@ public abstract class OptionalInt implements Serializable {
     }
 
     /**
-     * Returns {@code true} if this holder contains a (non-null) instance.
+     * Returns {@code true} if there is a value.
+     * 
+     * @return {@code true} if this holder contains an integer
      */
     public abstract boolean isPresent();
 
     /**
-     * Returns the contained instance, which must be present. If the instance
-     * might be absent, use {@link #or(Object)} or {@link #orNull} instead.
+     * Returns the contained integer, which must be present. If the integer
+     * might be absent, use {@link #or(int)} instead.
+     * 
+     * @return the contained integer
      *
      * @throws IllegalStateException
      *             if the instance is absent ({@link #isPresent} returns
@@ -195,42 +204,50 @@ public abstract class OptionalInt implements Serializable {
 
     /**
      * Returns the contained int if it is present; {@code defaultValue}
-     * otherwise. If no default value should be required because the instance is
-     * known to be present, use {@link #get()} instead. For a default value of
-     * {@code null}, use {@link #orNull}.
+     * otherwise. If no default value should be required because the integer is
+     * known to be present, use {@link #get()} instead.
+     * 
+     * @param defaultValue
+     *            - the value to return if this holder does not have a value
+     * @return the contained int if it is present, otherwise defaultValue
      */
     public abstract int or(int defaultValue);
 
     /**
      * Returns this {@code OptionalInt} if it has a value present;
      * {@code secondChoice} otherwise.
+     * 
+     * @param secondChoice
+     *            - the second OptionalInt to use
+     * @return this if {@code this.isPresent()}, otherwise secondChoice
      */
     public abstract OptionalInt or(OptionalInt secondChoice);
 
     /**
      * Returns the contained int if it is present; {@code supplier.get()}
      * otherwise.
+     * 
+     * @param supplier
+     *            - supplier to use if this value is not present
+     * @return {@code if (this.isPresent()) this.get(); else supplier.get();}
      */
     public abstract int or(IntSupplier supplier);
 
     /**
      * If the instance is present, it is transformed with the given
      * {@link IntUnaryOperator}; otherwise, {@link OptionalInt#absent} is
-     * returned. If the function returns {@code null}, a
-     * {@link NullPointerException} is thrown.
-     *
-     * @throws NullPointerException
-     *             if the function returns {@code null}
-     *
-     * @since 12.0
+     * returned.
+     * 
+     * @param function
+     *            - function to transform this OptionalInt by
+     * @return {@code if (this.isPresent()) OptionalInt.of(function(this.get)); else OptionalInt.absent();}
      */
     public abstract OptionalInt transform(IntUnaryOperator function);
 
     /**
-     * Returns {@code true} if {@code object} is an {@code Optional} instance,
-     * and either the contained references are {@linkplain Object#equals equal}
-     * to each other or both are absent. Note that {@code Optional} instances of
-     * differing parameterized types can be equal.
+     * Returns {@code true} if {@code object} is an {@code OptionalInt}
+     * instance, and either the contained integers are equal to each other or
+     * both are absent.
      */
     @Override
     public abstract boolean equals(Object object);

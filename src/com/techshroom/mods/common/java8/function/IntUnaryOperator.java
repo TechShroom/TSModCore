@@ -30,6 +30,10 @@ public interface IntUnaryOperator {
      * {@code a == b} implies that
      * {@code function.apply(a) == function.apply(b)}.
      * </ul>
+     * 
+     * @param input
+     *            - input
+     * @return int result
      */
     int applyAsInt(int input);
 }

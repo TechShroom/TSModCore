@@ -15,8 +15,6 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * Core proxy class for mods to extend.
@@ -24,20 +22,29 @@ import cpw.mods.fml.relauncher.SideOnly;
  * @author Kenzie Togami
  *
  */
-public abstract class Proxy {
-    @SideOnly(Side.CLIENT)
-    public static abstract class Client
-            extends Proxy {
-        @Override
-        protected void regObjHook(RegisterableObject<?> regObj)
-                throws Throwable {
-            super.regObjHook(regObj);
-            regObj.registerClient();
-        }
-    }
-
+public class Proxy {
+    /**
+     * Different states correlating to the current proxy state.
+     * 
+     * @author Kenzie Togami
+     */
     public static enum State {
-        STARTUP, PREINIT, INIT, POSTINIT;
+        /**
+         * Initial state
+         */
+        STARTUP,
+        /**
+         * Pre-init state
+         */
+        PREINIT,
+        /**
+         * Initialization state
+         */
+        INIT,
+        /**
+         * Post-init state
+         */
+        POSTINIT;
     }
 
     /**
@@ -61,10 +68,17 @@ public abstract class Proxy {
     private State currentState = State.STARTUP;
     private State lastPassedState = State.STARTUP;
 
+    /**
+     * @return the current state of the proxy
+     */
     public State getCurrentState() {
         return currentState;
     }
 
+    /**
+     * @return the state that was passed last. Almost always differs from
+     *         {@link #getCurrentState()}.
+     */
     public State getLastPassedState() {
         return lastPassedState;
     }
@@ -87,6 +101,7 @@ public abstract class Proxy {
         currentState = null;
     }
 
+    @SuppressWarnings("javadoc")
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public final void postInit(FMLPostInitializationEvent postInit) {
         enter(State.POSTINIT);
@@ -94,6 +109,7 @@ public abstract class Proxy {
         leave();
     }
 
+    @SuppressWarnings("javadoc")
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public final void preInit(FMLPreInitializationEvent preInit) {
         enter(State.PREINIT);
@@ -101,6 +117,7 @@ public abstract class Proxy {
         leave();
     }
 
+    @SuppressWarnings("javadoc")
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public final void init(FMLInitializationEvent init) {
         enter(State.INIT);
@@ -108,6 +125,12 @@ public abstract class Proxy {
         leave();
     }
 
+    /**
+     * Add an object to register later.
+     * 
+     * @param regObj
+     *            - a registerable object to register later
+     */
     public final void registerRegisterableObject(RegisterableObject<?> regObj) {
         int compareTo = regObj.registerState().compareTo(currentState);
         if (compareTo > 0) {

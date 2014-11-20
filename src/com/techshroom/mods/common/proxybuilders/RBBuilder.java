@@ -24,10 +24,32 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
+/**
+ * Builder/RegisterableObject for blocks.
+ * 
+ * @author Kenzie Togami
+ *
+ * @param <BlockType>
+ *            - block type to build
+ * @param <TileType>
+ *            - possible related tile type
+ */
 public class RBBuilder<BlockType extends Block, TileType extends TileEntity>
         implements RegisterableObject<BlockType> {
+    /**
+     * Rough no tile implementation.
+     * 
+     * @author Kenzie Togami
+     *
+     * @param <BlockType>
+     *            - block type to build
+     */
     public static class NoTile<BlockType extends Block>
             extends RBBuilder<BlockType, TileEntity> {
+        /**
+         * @param blockClass
+         *            - block class to use
+         */
         public NoTile(Class<BlockType> blockClass) {
             super(blockClass);
         }
@@ -45,12 +67,33 @@ public class RBBuilder<BlockType extends Block, TileType extends TileEntity>
         }
     }
 
+    /**
+     * @see Block#setTickRandomly(boolean)
+     * 
+     * @author Kenzie Togami
+     */
     public static enum TickRandomly {
-        ON, OFF;
+        /**
+         * Tick randomly.
+         */
+        ON,
+        /**
+         * Don't tick randomly.
+         */
+        OFF;
     }
 
+    /**
+     * Hardness value class, mainly because of the special
+     * {@link Block#setBlockUnbreakable()}.
+     * 
+     * @author Kenzie Togami
+     */
     public static class HardnessValue {
         private static final float UNBREAKABLE_VALUE = -1.0f;
+        /**
+         * UNBREAKABLE is the equivalent of {@link Block#setBlockUnbreakable()}.
+         */
         public static final RBBuilder.HardnessValue UNBREAKABLE =
                 new HardnessValue(UNBREAKABLE_VALUE) {
                     @Override
@@ -64,6 +107,13 @@ public class RBBuilder<BlockType extends Block, TileType extends TileEntity>
                     };
                 };
 
+        /**
+         * Wraps the given float.
+         * 
+         * @param value
+         *            - hardness value as a float
+         * @return a new HardnessValue
+         */
         public static RBBuilder.HardnessValue wrap(float value) {
             if (Float.compare(value, UNBREAKABLE_VALUE) == 0) {
                 return UNBREAKABLE;
@@ -77,6 +127,9 @@ public class RBBuilder<BlockType extends Block, TileType extends TileEntity>
             value = val;
         }
 
+        /**
+         * @return the float value of this object
+         */
         public float getValue() {
             return value;
         }
@@ -126,117 +179,245 @@ public class RBBuilder<BlockType extends Block, TileType extends TileEntity>
     private BlockType created;
     private boolean registerFlag;
 
+    /**
+     * Creates a new builder using the given class.
+     * 
+     * @param blockClass
+     *            - block class to use
+     */
     public RBBuilder(Class<BlockType> blockClass) {
         this.blockClass = blockClass;
     }
 
+    /**
+     * Get the given block class.
+     * 
+     * @return the block class
+     */
     public Class<BlockType> getBlockClass() {
         return blockClass;
     }
 
+    /**
+     * @return Optional of block ID
+     */
     public Optional<String> getBlockID() {
         return blockID;
     }
 
+    /**
+     * Set the target ID.
+     * 
+     * @param blockID
+     *            - block ID to set
+     */
     public void setBlockID(String blockID) {
         this.blockID = Optional.of(blockID);
     }
 
+    /**
+     * @return Optional of texture name
+     */
     public Optional<String> getBlockTextureName() {
         return blockTextureName;
     }
 
+    /**
+     * Set the texture name.
+     * 
+     * @param blockTextureName
+     *            - block texture name.
+     */
     public void setBlockTextureName(String blockTextureName) {
         this.blockTextureName = Optional.of(blockTextureName);
     }
 
+    /**
+     * @return Optional of creative tab
+     */
     public Optional<CreativeTabs> getCreativeTab() {
         return creativeTab;
     }
 
+    /**
+     * Set the creative tab.
+     * 
+     * @param creativeTab
+     *            - the creative tab
+     */
     public void setCreativeTab(CreativeTabs creativeTab) {
         this.creativeTab = Optional.of(creativeTab);
     }
 
+    /**
+     * @return Optional of hardness value
+     */
     public Optional<RBBuilder.HardnessValue> getHardness() {
         return hardness;
     }
 
+    /**
+     * Set the hardness value.
+     * 
+     * @param hardness
+     *            - hardness value
+     */
     public void setHardness(RBBuilder.HardnessValue hardness) {
         this.hardness = Optional.of(hardness);
     }
 
+    /**
+     * @return Optional of harvest data.
+     */
     public Optional<HarvestData.BlockExtension> getHarvestData() {
         return harvestData;
     }
 
+    /**
+     * Set the harvest data.
+     * 
+     * @param harvestData
+     *            - harvest data
+     */
     public void setHarvestData(HarvestData.BlockExtension harvestData) {
         this.harvestData = Optional.of(harvestData);
     }
 
+    /**
+     * @return OptionalFloat of resistance
+     */
     public OptionalFloat getResistance() {
         return resistance;
     }
 
+    /**
+     * Set the resistance value.
+     * 
+     * @param resistance
+     *            - resistance
+     */
     public void setResistance(float resistance) {
         this.resistance = OptionalFloat.of(resistance);
     }
 
+    /**
+     * @return OptionalFloat of light level.
+     */
     public OptionalFloat getLightLevel() {
         return lightLevel;
     }
 
+    /**
+     * Set the light level.
+     * 
+     * @param lightLevel
+     *            - light level.
+     */
     public void setLightLevel(float lightLevel) {
         this.lightLevel = OptionalFloat.of(lightLevel);
     }
 
+    /**
+     * @return OptionalInt of light opacity.
+     */
     public OptionalInt getLightOpacity() {
         return lightOpacity;
     }
 
+    /**
+     * Set the light opacity value.
+     * 
+     * @param lightOpacity
+     *            - light opacity
+     */
     public void setLightOpacity(int lightOpacity) {
         this.lightOpacity = OptionalInt.of(lightOpacity);
     }
 
+    /**
+     * @return Optional of sound type
+     */
     public Optional<SoundType> getSoundType() {
         return soundType;
     }
 
+    /**
+     * Set the sound type.
+     * 
+     * @param soundType
+     *            - sound type
+     */
     public void setSoundType(SoundType soundType) {
         this.soundType = Optional.of(soundType);
     }
 
+    /**
+     * @return Optional of tick randomly
+     */
     public Optional<RBBuilder.TickRandomly> getTickRandomly() {
         return tickRandomly;
     }
 
+    /**
+     * Set tick randomly.
+     * 
+     * @param tickRandomly
+     *            - tick randomly
+     */
     public void setTickRandomly(RBBuilder.TickRandomly tickRandomly) {
         this.tickRandomly = Optional.of(tickRandomly);
     }
 
+    /**
+     * @return Optional of TileEntity class
+     */
     public Optional<Class<TileType>> getTileEntityClass() {
         return tileEntityClass;
     }
 
+    /**
+     * Set the TileEntity class.
+     * 
+     * @param tileEntityClass
+     *            - tile entity class
+     */
     public void setTileEntityClass(Class<TileType> tileEntityClass) {
         this.tileEntityClass = Optional.of(tileEntityClass);
     }
 
+    /**
+     * @return Optional of renderer
+     */
     @SideOnly(Side.CLIENT)
     public Optional<TileEntitySpecialRenderer> getTileEntityRenderer() {
         return tileEntityRenderer;
     }
 
+    /**
+     * Set the tile renderer.
+     * 
+     * @param tileEntityRenderer
+     *            - tile entity renderer
+     */
     @SideOnly(Side.CLIENT)
     public void setTileEntityRenderer(
             TileEntitySpecialRenderer tileEntityRenderer) {
         this.tileEntityRenderer = Optional.of(tileEntityRenderer);
     }
 
+    /**
+     * @return Optional of ItemBlock class
+     */
     public Optional<Class<ItemBlock>> getItemBlockClass() {
         return itemBlockClass;
     }
 
+    /**
+     * Set the ItemBlock class.
+     * 
+     * @param itemBlockClass
+     *            - ItemBlock class
+     */
     public void setItemBlockClass(Class<ItemBlock> itemBlockClass) {
         this.itemBlockClass = Optional.of(itemBlockClass);
     }
@@ -340,6 +521,7 @@ public class RBBuilder<BlockType extends Block, TileType extends TileEntity>
     public String toString() {
         ToStringHelper toString = Objects.toStringHelper(this);
         Field[] fields = getClass().getDeclaredFields();
+        Field.setAccessible(fields, true);
         for (Field field : fields) {
             Object value = null;
             try {

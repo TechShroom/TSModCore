@@ -161,14 +161,20 @@ public abstract class OptionalFloat implements Serializable {
     }
 
     /**
-     * Returns an {@code Optional} instance with no contained reference.
+     * Returns an {@code OptionalFloat} instance with no contained float.
+     * 
+     * @return an OptionalFloat with no value.
      */
     public static OptionalFloat absent() {
         return Absent.INSTANCE;
     }
 
     /**
-     * Returns an {@code Optional} instance containing the given reference.
+     * Returns an {@code OptionalFloat} instance containing the given float.
+     * 
+     * @param value
+     *            - value to wrap
+     * @return an OptionalFloat containing the given value
      */
     public static OptionalFloat of(float value) {
         return new Present(value);
@@ -178,13 +184,17 @@ public abstract class OptionalFloat implements Serializable {
     }
 
     /**
-     * Returns {@code true} if this holder contains a float.
+     * Returns {@code true} if there is a value.
+     * 
+     * @return {@code true} if this holder contains a float
      */
     public abstract boolean isPresent();
 
     /**
-     * Returns the contained float, which must be present. If the instance might
-     * be absent, use {@link #or(float)} instead.
+     * Returns the contained float, which must be present. If the float might be
+     * absent, use {@link #or(float)} instead.
+     * 
+     * @return the contained float
      *
      * @throws IllegalStateException
      *             if the instance is absent ({@link #isPresent} returns
@@ -194,20 +204,32 @@ public abstract class OptionalFloat implements Serializable {
 
     /**
      * Returns the contained float if it is present; {@code defaultValue}
-     * otherwise. If no default value should be required because the instance is
+     * otherwise. If no default value should be required because the float is
      * known to be present, use {@link #get()} instead.
+     * 
+     * @param defaultValue
+     *            - the value to return if this holder does not have a value
+     * @return the contained float if it is present, otherwise defaultValue
      */
     public abstract float or(float defaultValue);
 
     /**
-     * Returns this {@code OptionalInt} if it has a value present;
+     * Returns this {@code OptionalFloat} if it has a value present;
      * {@code secondChoice} otherwise.
+     * 
+     * @param secondChoice
+     *            - the second OptionalFloat to use
+     * @return this if {@code this.isPresent()}, otherwise secondChoice
      */
     public abstract OptionalFloat or(OptionalFloat secondChoice);
 
     /**
-     * Returns the contained int if it is present; {@code supplier.get()}
+     * Returns the contained float if it is present; {@code supplier.get()}
      * otherwise.
+     * 
+     * @param supplier
+     *            - supplier to use if this value is not present
+     * @return {@code if (this.isPresent()) this.get(); else supplier.get();}
      */
     public abstract float or(FloatSupplier supplier);
 
@@ -215,15 +237,17 @@ public abstract class OptionalFloat implements Serializable {
      * If the instance is present, it is transformed with the given
      * {@link FloatUnaryOperator}; otherwise, {@link OptionalFloat#absent} is
      * returned.
-     *
-     * @since 12.0
+     * 
+     * @param function
+     *            - function to transform this OptionalInt by
+     * @return {@code if (this.isPresent()) OptionalFloat.of(function(this.get)); else OptionalFloat.absent();}
      */
     public abstract OptionalFloat transform(FloatUnaryOperator function);
 
     /**
-     * Returns {@code true} if {@code object} is an {@code Optional} instance,
-     * and either the contained references are {@linkplain Object#equals equal}
-     * to each other or both are absent.
+     * Returns {@code true} if {@code object} is an {@code OptionalFloat}
+     * instance, and either the contained float are equal to each other or both
+     * are absent.
      */
     @Override
     public abstract boolean equals(Object object);
