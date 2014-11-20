@@ -87,7 +87,7 @@ task updateVersion(type: Copy) {
     from(sourceSets.main.java.srcDirs)
     into 'build/sources/java'
     filter(ReplaceTokens, tokens: [
-        'VERSION': config.mod.version,
+        'VERSION': project.version,
         'BUILD_NUMBER': build_number
     ])
 }
@@ -104,7 +104,7 @@ processResources {
     from(sourceSets.main.resources.srcDirs) {
         include '**.info'
         filter(ReplaceTokens, tokens: [
-            'VERSION': config.mod.version,
+            'VERSION': project.version,
             'BUILD_NUMBER': build_number,
             'MC_VERSION': config.mc.version,
             'FORGE_VERSION': config.forge.version,
@@ -116,12 +116,16 @@ processResources {
         include 'assets/**/*.*'
     }
 }
-ext.jarVer = "${project.minecraft.version}-${project.version}"
 // Add in a source jar for people, should they desire to download such a thing
 task sourceJar(type: Jar) {
     from sourceSets.main.allSource
     classifier = 'sources'
-    version = project.ext.jarVer
+    version = project.version
+}
+task javadocJar(type: Jar) {
+    from javadoc
+    classifier = 'javadoc'
+    version = project.version
 }
 
 // Add in an mcp named jar, for those who wish to run in a development environment (assuming mcp naming matches)
@@ -137,15 +141,53 @@ task sourceJar(type: Jar) {
 
 // Tell the artifact system about our extra jars
 artifacts {
-    archives sourceJar
+    archives sourceJar, javadocJar
 }
+apply plugin: 'maven'
+apply plugin: 'signing'
+signing {
+    sign configurations.archives
+}
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-apply plugin: 'maven-publish'
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-            artifact sourceJar
+      repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+        authentication(userName: ossrhUsername, password: ossrhPassword)
+      }
+
+      snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+        authentication(userName: ossrhUsername, password: ossrhPassword)
+      }
+
+      pom.project {
+        name "${config.mod.id}"
+        packaging 'jar'
+        description 'TSModCore mod for Minecraft'
+        url 'https://github.com/TechShroom/TSModCore'
+
+        scm {
+          connection 'git://github.com/TechShroom/TSModCore'
+          developerConnection 'git://github.com/TechShroom/TSModCore'
+          url 'https://github.com/TechShroom/TSModCore'
         }
+
+        licenses {
+          license {
+            name 'The MIT License'
+            url 'https://github.com/TechShroom/TSModCore/blob/master/LICENSE'
+          }
+        }
+
+        developers {
+          developer {
+            id 'kenzierocks'
+            name 'Kenzie Togami'
+            email 'ket1999@gmail.com'
+          }
+        }
+      }
     }
+  }
 }
