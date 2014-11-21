@@ -1,6 +1,7 @@
 package com.techshroom.mods.common.proxybuilders;
 
 import static com.google.common.base.Preconditions.*;
+import static com.techshroom.mods.common.Generics.castOptional;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -16,6 +17,7 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -35,13 +37,30 @@ import cpw.mods.fml.common.registry.GameRegistry;
  */
 public abstract class RRBuilder<RecipeType> implements
         RegisterableObject<RecipeType> {
+    /**
+     * IRecipe extension of RRBuilder
+     * 
+     * @author Kenzie Togami
+     *
+     * @param <IRecipeType>
+     *            - Some IRecipe class
+     */
     public static class IRecipeExtension<IRecipeType extends IRecipe>
             extends RRBuilder<IRecipeType> {
         private IRecipeType ref;
 
+        /**
+         * Creates a new IRecipeExtension.
+         */
         public IRecipeExtension() {
         }
 
+        /**
+         * Creates a new IRecipeExtension with the given reference.
+         * 
+         * @param ref
+         *            - reference of type IRecipeType
+         */
         public IRecipeExtension(IRecipeType ref) {
             this.ref = ref;
         }
@@ -66,36 +85,110 @@ public abstract class RRBuilder<RecipeType> implements
         }
     }
 
+    /**
+     * Furnace recipe builder extension.
+     * 
+     * @author Kenzie Togami
+     */
     public static class SmeltingExtension
             extends RRBuilder<Void> {
         private Object input;
         private ItemStack result;
         private float xp;
 
-        public Object getInput() {
-            return input;
+        /**
+         * Gets the input object wrapped in an Optional.
+         * 
+         * @return the input object, one of Block, Item, or ItemStack.
+         */
+        public Optional<Object> getInput() {
+            return Optional.fromNullable(input);
         }
 
+        /**
+         * Gets the input as an ItemStack, if possible. If it is not possible,
+         * then {@link Optional#absent()} is returned.
+         * 
+         * @return {@link #getInput()} transformed to give an ItemStack if
+         *         possible.
+         */
+        public Optional<ItemStack> inputAsItemStack() {
+            return castOptional(getInput(), ItemStack.class);
+        }
+
+        /**
+         * Gets the input as an Item, if possible. If it is not possible, then
+         * {@link Optional#absent()} is returned.
+         * 
+         * @return {@link #getInput()} transformed to give an Item if possible.
+         */
+        public Optional<Item> inputAsItem() {
+            return castOptional(getInput(), Item.class);
+        }
+
+        /**
+         * Gets the input as a Block, if possible. If it is not possible, then
+         * {@link Optional#absent()} is returned.
+         * 
+         * @return {@link #getInput()} transformed to give a Block if possible.
+         */
+        public Optional<Block> inputAsBlock() {
+            return castOptional(getInput(), Block.class);
+        }
+
+        /**
+         * Sets the input for the recipe.
+         * 
+         * @param stack
+         *            - ItemStack to set as required input
+         * @return this
+         */
         public SmeltingExtension setInput(ItemStack stack) {
-            this.input = stack;
+            this.input = checkNotNull(stack);
             return this;
         }
 
+        /**
+         * Sets the input for the recipe.
+         * 
+         * @param block
+         *            - ItemStack to set as required input
+         * @return this
+         */
         public SmeltingExtension setInput(Block block) {
-            this.input = block;
+            this.input = checkNotNull(block);
             return this;
         }
 
+        /**
+         * Sets the input for the recipe.
+         * 
+         * @param item
+         *            - ItemStack to set as required input
+         * @return this
+         */
         public SmeltingExtension setInput(Item item) {
-            this.input = item;
+            this.input = checkNotNull(item);
             return this;
         }
 
+        /**
+         * Sets the result of the recipe.
+         * 
+         * @param result
+         *            - ItemStack to set as result
+         * @return this
+         */
         public SmeltingExtension setResult(ItemStack result) {
-            this.result = result;
+            this.result = checkNotNull(result);
             return this;
         }
 
+        /**
+         * Gets the result of the recipe.
+         * 
+         * @return the result of the recipe
+         */
         public ItemStack getResult() {
             return result;
         }
