@@ -13,6 +13,10 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class ClientProxy
         extends Proxy {
+    /**
+     * Qualified name of this class.
+     */
+    public static final String QUALNAME = "com.techshroom.mods.common.ClientProxy";
     @Override
     protected void regObjHook(RegisterableObject<?> regObj) throws Throwable {
         super.regObjHook(regObj);
