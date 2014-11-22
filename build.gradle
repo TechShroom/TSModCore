@@ -73,10 +73,10 @@ dependencies {
 
 version =  "${project.config.mod.version}"
 
-println config.mc.version + "-" + config.forge.version
 // Setup the forge minecraft plugin data. Specify the preferred forge/minecraft version here
 minecraft {
     version = config.mc.version + "-" + config.forge.version
+    println version
     if (file('../run').exists()) {
         runDir = "../run"
     } else {
