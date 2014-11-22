@@ -1,6 +1,10 @@
 package com.techshroom.mods.common;
 
+import java.lang.reflect.Array;
+import java.util.Map;
+
 import com.google.common.base.Optional;
+import com.google.common.collect.Maps;
 
 /**
  * Generic functionalities for cleaner generic code.
@@ -27,6 +31,24 @@ public final class Generics {
             itemStackOpt = (Optional<Y>) (Object) original;
         }
         return itemStackOpt;
+    }
+
+    private static final Map<Class<?>, Object> ARRAYS = Maps.newConcurrentMap();
+
+    /**
+     * Generic empty array sharing, for performance reasons.
+     * 
+     * @param forceT
+     *            - force type parameter with this class
+     * 
+     * @return an empty array of type T
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T[] emptyArray(Class<T> forceT) {
+        if (!ARRAYS.containsKey(forceT)) {
+            ARRAYS.put(forceT, Array.newInstance(forceT, 0));
+        }
+        return (T[]) ARRAYS.get(forceT);
     }
 
     private Generics() {
