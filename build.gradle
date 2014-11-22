@@ -164,12 +164,12 @@ task javadocJar(type: Jar) {
 artifacts {
     archives sourceJar, javadocJar
 }
+if (!_hasProperty("TRAVIS") || !_property("TRAVIS").toBoolean()) { //temp until we secure it
 apply plugin: 'maven'
 apply plugin: 'signing'
 signing {
     sign configurations.archives
 }
-if (!_hasProperty("TRAVIS") || !_property("TRAVIS").toBoolean()) { //temp until we secure it
 uploadArchives {
   repositories {
     mavenDeployer {
