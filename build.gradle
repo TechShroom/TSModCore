@@ -71,8 +71,7 @@ dependencies {
     testCompile "junit:junit:4.+"
 }
 
-def build_number = (_property("BUILD_NUMBER") ?: "1")
-version =  "${project.config.mod.version}." + build_number + (_hasProperty("SNAPSHOT") ? "-" + _property("SNAPSHOT") : "")
+version =  "${project.config.mod.version}"
 
 println config.mc.version + "-" + config.forge.version
 // Setup the forge minecraft plugin data. Specify the preferred forge/minecraft version here
