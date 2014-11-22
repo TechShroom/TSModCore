@@ -24,6 +24,18 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
  */
 public class Proxy {
     /**
+     * Qualified name of this class.
+     */
+    public static final String QUALNAME = "com.techshroom.mods.common.Proxy";
+
+    /**
+     * This property key can be set to {@code false} in the system properties to
+     * make the proxy not automatically attach itself to the
+     * {@link MinecraftForge#EVENT_BUS event bus}.
+     */
+    public static final String AUTO_BIND_PROP_KEY = QUALNAME + ".attach";
+
+    /**
      * Different states correlating to the current proxy state.
      * 
      * @author Kenzie Togami
@@ -58,7 +70,12 @@ public class Proxy {
     }
 
     {
-        attachProxy(this);
+        boolean attach =
+                Boolean.parseBoolean(System.getProperty(AUTO_BIND_PROP_KEY,
+                                                        "true"));
+        if (attach) {
+            attachProxy(this);
+        }
     }
 
     private final Multimap<State, RegisterableObject<?>> builders =
@@ -133,9 +150,13 @@ public class Proxy {
      */
     public final void registerRegisterableObject(RegisterableObject<?> regObj) {
         int compareTo = regObj.registerState().compareTo(currentState);
-        if (compareTo > 0) {
+        if (compareTo < 0) {
             throw new IllegalStateException(
-                    "tried to register builder after its register state");
+                    String.format("tried to register builder after its "
+                                          + "register state (%s/%s > %s/%s)",
+                                  regObj.registerState(), regObj
+                                          .registerState().ordinal(),
+                                  currentState, currentState.ordinal()));
         } else if (compareTo == 0) {
             duringStateBuilders.add(regObj);
             return;
