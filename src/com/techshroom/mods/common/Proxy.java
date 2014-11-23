@@ -1,15 +1,21 @@
 package com.techshroom.mods.common;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import java.util.Collection;
+import java.util.Deque;
 import java.util.Set;
 
 import net.minecraftforge.common.MinecraftForge;
 
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.techshroom.mods.common.proxybuilders.RegisterableObject;
 
 import cpw.mods.fml.common.FMLLog;
+import cpw.mods.fml.common.LoaderState.ModState;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -36,7 +42,7 @@ public class Proxy {
     public static final String AUTO_BIND_PROP_KEY = QUALNAME + ".attach";
 
     /**
-     * Different states correlating to the current proxy state.
+     * Different states correlating to {@link ModState}.
      * 
      * @author Kenzie Togami
      */
@@ -44,19 +50,90 @@ public class Proxy {
         /**
          * Initial state
          */
-        STARTUP,
+        STARTUP(ModState.UNLOADED),
+        /**
+         * Load state
+         */
+        LOAD(ModState.LOADED),
+        /**
+         * Construct state
+         */
+        CONSTUCT(ModState.CONSTRUCTED),
         /**
          * Pre-init state
          */
-        PREINIT,
+        PREINIT(ModState.PREINITIALIZED),
         /**
          * Initialization state
          */
-        INIT,
+        INIT(ModState.INITIALIZED),
         /**
          * Post-init state
          */
-        POSTINIT;
+        POSTINIT(ModState.POSTINITIALIZED),
+        /**
+         * Available for use state
+         */
+        USEABLE(ModState.AVAILABLE),
+        /**
+         * Disable state
+         */
+        DISABLE(ModState.DISABLED),
+        /**
+         * Error state
+         */
+        ERROR(ModState.ERRORED);
+
+        private final ModState linkedState;
+
+        private State(ModState link) {
+            linkedState = checkNotNull(link, "null link");
+        }
+
+        /**
+         * Get the {@link ModState} that corresponds with this State.
+         * 
+         * @return the linked ModState
+         */
+        public ModState linkedState() {
+            return linkedState;
+        }
+
+        @Override
+        public String toString() {
+            return name() + "(ModState." + linkedState.name() + ")";
+        }
+    }
+
+    private static final ThreadLocal<Deque<Proxy>> activeProxies =
+            new ThreadLocal<Deque<Proxy>>() {
+                @Override
+                protected Deque<Proxy> initialValue() {
+                    return Lists.newLinkedList();
+                };
+            };
+
+    /**
+     * Get the first Proxy on the active stack. If there are none, then the
+     * result is defined by {@link Deque#poll()}.
+     * 
+     * @return the result of calling {@code Deque.poll()} on the active proxy
+     *         stack.
+     * @see #getActiveStack()
+     */
+    public static Proxy getHeadOfActiveStack() {
+        return activeProxies.get().peek();
+    }
+
+    /**
+     * Get the active proxy stack. Different for each thread.
+     * 
+     * @return the stack of active proxies.
+     * @see #markInUse()
+     * @see #markDone()
+     */
+    public static Deque<Proxy> getActiveStack() {
+        return activeProxies.get();
     }
 
     /**
@@ -64,6 +141,7 @@ public class Proxy {
      * {@code Proxy.<init>}.
      * 
      * @param p
+     *            - proxy
      */
     private final static void attachProxy(Proxy p) {
         MinecraftForge.EVENT_BUS.register(p);
@@ -86,6 +164,47 @@ public class Proxy {
     private State lastPassedState = State.STARTUP;
 
     /**
+     * Mark this proxy as an active proxy. This allows outside objects to ask
+     * for the current proxy that is calling them.
+     * 
+     * @see #markDone()
+     */
+    public void markInUse() {
+        activeProxies.get().push(this);
+    }
+
+    /**
+     * Mark this proxy as no longer active. If this proxy is not at the top of
+     * the active stack, an exception will be thrown.
+     * 
+     * @throws IllegalStateException
+     *             if this proxy is not at the top of the active stack
+     * @see #markInUse()
+     */
+    public void markDone() {
+        Deque<Proxy> proxies = activeProxies.get();
+        if (!proxies.contains(this)) {
+            throw new IllegalStateException("Not in active stack");
+        }
+        if (proxies.peek() != this) {
+            Collection<Proxy> popBefore =
+                    Lists.newArrayListWithCapacity(proxies.size());
+            for (Proxy proxy : proxies) {
+                if (proxy == this) {
+                    break;
+                }
+                popBefore.add(proxy);
+            }
+            throw new IllegalStateException(
+                    "Not at top of active stack; proxies that must be popped before us: "
+                            + popBefore);
+        }
+        proxies.pop();
+    }
+
+    /**
+     * Get the State that the proxy is currently in.
+     * 
      * @return the current state of the proxy
      */
     public State getCurrentState() {
@@ -93,6 +212,8 @@ public class Proxy {
     }
 
     /**
+     * Get the State that this proxy last passed.
+     * 
      * @return the state that was passed last. Almost always differs from
      *         {@link #getCurrentState()}.
      */
@@ -100,10 +221,17 @@ public class Proxy {
         return lastPassedState;
     }
 
+    /*
+     * Note: this calls markInUse, which should always be a good idea.
+     */
     private void enter(State state) {
+        markInUse();
         currentState = state;
     }
 
+    /*
+     * See above.
+     */
     private void leave() {
         if (currentState == null) {
             throw new IllegalStateException(
@@ -116,6 +244,7 @@ public class Proxy {
         duringStateBuilders.clear();
         lastPassedState = currentState;
         currentState = null;
+        markDone();
     }
 
     @SuppressWarnings("javadoc")
