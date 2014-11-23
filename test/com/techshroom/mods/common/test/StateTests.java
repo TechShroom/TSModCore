@@ -8,8 +8,6 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Maps;
 import com.techshroom.mods.common.Proxy.State;
 
 import cpw.mods.fml.common.LoaderState.ModState;
