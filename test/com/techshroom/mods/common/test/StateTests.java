@@ -47,19 +47,7 @@ public class StateTests {
      */
     @Test
     public void orderedLikeModState() {
-        Map<ModState, State> stateMap =
-                Maps.toMap(EnumSet.allOf(ModState.class),
-                           new Function<ModState, State>() {
-                               @Override
-                               public State apply(ModState input) {
-                                   for (State state : State.values()) {
-                                       if (state.linkedState() == input) {
-                                           return state;
-                                       }
-                                   }
-                                   return null;
-                               }
-                           });
+        Map<ModState, State> stateMap = State.modStateToStateMap;
         ModState lastLink = null;
         for (State state : State.values()) {
             ModState stateLink = state.linkedState();

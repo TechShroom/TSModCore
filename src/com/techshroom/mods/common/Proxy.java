@@ -4,12 +4,15 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.Collection;
 import java.util.Deque;
+import java.util.Map;
 import java.util.Set;
 
 import net.minecraftforge.common.MinecraftForge;
 
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.techshroom.mods.common.proxybuilders.RegisterableObject;
@@ -83,6 +86,18 @@ public class Proxy {
          * Error state
          */
         ERROR(ModState.ERRORED);
+
+        /**
+         * ModState -> State mapping.
+         */
+        public static final ImmutableMap<ModState, State> modStateToStateMap;
+        static {
+            Map<ModState, State> tmp = Maps.newEnumMap(ModState.class);
+            for (State state : values()) {
+                tmp.put(state.linkedState, state);
+            }
+            modStateToStateMap = ImmutableMap.copyOf(tmp);
+        }
 
         private final ModState linkedState;
 
