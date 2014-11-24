@@ -16,11 +16,7 @@ import com.techshroom.mods.common.Proxy.State;
 import com.techshroom.mods.common.java8.function.Consumer;
 import com.techshroom.mods.common.proxybuilders.RegisterableObject;
 
-import cpw.mods.fml.common.event.FMLConstructionEvent;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.*;
 
 /**
  * Tests for proxy classes.
@@ -222,7 +218,6 @@ public class ProxyTests {
         switch (state) {
             case STARTUP:
             case LOAD:
-            case DISABLE:
             case ERROR:
                 // nothing
                 return false;
@@ -240,6 +235,21 @@ public class ProxyTests {
                 break;
             case USEABLE:
                 proxy.avalible(new FMLLoadCompleteEvent());
+                break;
+            case SERVER_ABOUT_TO_START:
+                proxy.aboutToStart(new FMLServerAboutToStartEvent((Object) null));
+                break;
+            case SERVER_START_BEGIN:
+                proxy.startBegin(new FMLServerStartingEvent((Object) null));
+                break;
+            case SERVER_START_END:
+                proxy.startEnd(new FMLServerStartedEvent());
+                break;
+            case SERVER_STOP_BEGIN:
+                proxy.stopBegin(new FMLServerStoppingEvent());
+                break;
+            case SERVER_STOP_END:
+                proxy.stopEnd(new FMLServerStoppedEvent());
                 break;
             default:
                 throw new IllegalStateException("state not implemented: "

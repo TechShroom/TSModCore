@@ -2,6 +2,7 @@ package com.techshroom.mods.common;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.Map;
@@ -17,14 +18,11 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.techshroom.mods.common.proxybuilders.RegisterableObject;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.FMLLog;
+import cpw.mods.fml.common.LoaderState;
 import cpw.mods.fml.common.LoaderState.ModState;
-import cpw.mods.fml.common.event.FMLConstructionEvent;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLStateEvent;
+import cpw.mods.fml.common.event.*;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
@@ -56,81 +54,149 @@ public class Proxy {
         /**
          * Initial state
          */
-        STARTUP(ModState.UNLOADED),
+        STARTUP(LoaderState.NOINIT),
         /**
          * Load state
          */
-        LOAD(ModState.LOADED),
+        LOAD(LoaderState.LOADING),
         /**
          * Construct state
          */
-        CONSTRUCT(ModState.CONSTRUCTED),
+        CONSTRUCT(LoaderState.CONSTRUCTING),
         /**
          * Pre-init state
          */
-        PREINIT(ModState.PREINITIALIZED),
+        PREINIT(LoaderState.PREINITIALIZATION),
         /**
          * Initialization state
          */
-        INIT(ModState.INITIALIZED),
+        INIT(LoaderState.INITIALIZATION),
         /**
          * Post-init state
          */
-        POSTINIT(ModState.POSTINITIALIZED),
+        POSTINIT(LoaderState.POSTINITIALIZATION),
         /**
          * Available for use state
          */
-        USEABLE(ModState.AVAILABLE),
+        USEABLE(LoaderState.AVAILABLE),
         /**
-         * Disable state
+         * Server about to start state
          */
-        DISABLE(ModState.DISABLED),
+        SERVER_ABOUT_TO_START(LoaderState.SERVER_ABOUT_TO_START),
+        /**
+         * Server start begin state
+         */
+        SERVER_START_BEGIN(LoaderState.SERVER_STARTING),
+        /**
+         * Server start end state
+         */
+        SERVER_START_END(LoaderState.SERVER_STARTED),
+        /**
+         * Server stop begin state
+         */
+        SERVER_STOP_BEGIN(LoaderState.SERVER_STOPPING),
+        /**
+         * Server stop end state
+         */
+        SERVER_STOP_END(LoaderState.SERVER_STOPPED),
         /**
          * Error state
          */
-        ERROR(ModState.ERRORED);
+        ERROR(LoaderState.ERRORED);
 
         /**
-         * ModState -> State mapping.
+         * LoaderState -> State mapping.
          */
-        public static final ImmutableMap<ModState, State> modStateToStateMap;
+        public static final ImmutableMap<LoaderState, State> loaderStateMap;
         static {
-            Map<ModState, State> tmp = Maps.newEnumMap(ModState.class);
+            Map<LoaderState, State> tmp = Maps.newEnumMap(LoaderState.class);
             for (State state : values()) {
                 tmp.put(state.linkedState, state);
             }
-            modStateToStateMap = ImmutableMap.copyOf(tmp);
+            loaderStateMap = ImmutableMap.copyOf(tmp);
+        }
+
+        private static final Field LOADERSTATE_EVENTCLASS;
+        static {
+            Field tmp = null;
+            try {
+                tmp = LoaderState.class.getDeclaredField("eventClass");
+                tmp.setAccessible(true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (tmp == null) {
+                    FMLCommonHandler.instance().exitJava(1, false);
+                }
+            }
+            LOADERSTATE_EVENTCLASS = tmp;
+        }
+        private static final ImmutableMap<Class<FMLStateEvent>, LoaderState> eventMapping;
+
+        @SuppressWarnings("unchecked")
+        private static Class<FMLStateEvent> getStateEventClass(LoaderState ls) {
+            try {
+                return FMLStateEvent.class.getClass()
+                        .cast(LOADERSTATE_EVENTCLASS.get(ls));
+            } catch (Exception e) {
+                e.printStackTrace();
+                FMLCommonHandler.instance().exitJava(1, false);
+                return null;
+            }
+        }
+
+        static {
+            Map<Class<FMLStateEvent>, LoaderState> tmp =
+                    Maps.newHashMapWithExpectedSize(LoaderState.values().length);
+            for (LoaderState ls : LoaderState.values()) {
+                if (!ls.hasEvent()) {
+                    continue;
+                }
+                tmp.put(getStateEventClass(ls), ls);
+            }
+            eventMapping = ImmutableMap.copyOf(tmp);
         }
 
         /**
-         * Convert a ModState to a State.
+         * Convert a LoaderState to a State.
          * 
          * @param state
-         *            - the ModState to map from
+         *            - the LoaderState to map from
          * @return the corresponding state
          */
-        public static State from(ModState state) {
-            return modStateToStateMap.get(state);
+        public static State from(LoaderState state) {
+            return loaderStateMap.get(state);
         }
 
-        private final ModState linkedState;
+        /**
+         * Convert a FMLStateEvent to a State.
+         * 
+         * @param stateEvent
+         *            - the FMLStateEvent to map from
+         * @return the corresponding state
+         */
+        public static State from(FMLStateEvent stateEvent) {
+            return loaderStateMap.get(eventMapping.get(stateEvent.getClass()));
+        }
 
-        private State(ModState link) {
+        private final LoaderState linkedState;
+
+        private State(LoaderState link) {
             linkedState = checkNotNull(link, "null link");
         }
 
         /**
-         * Get the {@link ModState} that corresponds with this State.
+         * Get the {@link LoaderState} that corresponds with this State.
          * 
-         * @return the linked ModState
+         * @return the linked LoaderState
          */
-        public ModState linkedState() {
+        public LoaderState linkedState() {
             return linkedState;
         }
 
         @Override
         public String toString() {
-            return name() + "(ModState." + linkedState.name() + ")";
+            return name() + "(LoaderState." + linkedState.name() + ")";
         }
     }
 
@@ -255,7 +321,7 @@ public class Proxy {
      */
     private void enter(FMLStateEvent state) {
         markInUse();
-        currentState = State.from(state.getModState());
+        currentState = State.from(state);
     }
 
     /*
@@ -312,6 +378,46 @@ public class Proxy {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public final void avalible(FMLLoadCompleteEvent avalible) {
         enter(avalible);
+        runRegObjHook();
+        leave();
+    }
+
+    @SuppressWarnings("javadoc")
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public final void aboutToStart(FMLServerAboutToStartEvent aboutToStart) {
+        enter(aboutToStart);
+        runRegObjHook();
+        leave();
+    }
+
+    @SuppressWarnings("javadoc")
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public final void startBegin(FMLServerStartingEvent startBegin) {
+        enter(startBegin);
+        runRegObjHook();
+        leave();
+    }
+
+    @SuppressWarnings("javadoc")
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public final void startEnd(FMLServerStartedEvent startEnd) {
+        enter(startEnd);
+        runRegObjHook();
+        leave();
+    }
+
+    @SuppressWarnings("javadoc")
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public final void stopBegin(FMLServerStoppingEvent stopBegin) {
+        enter(stopBegin);
+        runRegObjHook();
+        leave();
+    }
+
+    @SuppressWarnings("javadoc")
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public final void stopEnd(FMLServerStoppedEvent stopEnd) {
+        enter(stopEnd);
         runRegObjHook();
         leave();
     }

@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import com.techshroom.mods.common.Proxy.State;
 
-import cpw.mods.fml.common.LoaderState.ModState;
+import cpw.mods.fml.common.LoaderState;
 
 /**
  * Tests for {@link State}.
@@ -22,8 +22,8 @@ public class StateTests {
      * 
      * @return
      */
-    private Set<ModState> allLinkedCheck() {
-        Set<ModState> check = EnumSet.allOf(ModState.class);
+    private Set<LoaderState> allLinkedCheck() {
+        Set<LoaderState> check = EnumSet.allOf(LoaderState.class);
         for (State state : State.values()) {
             check.remove(state.linkedState());
         }
@@ -31,24 +31,24 @@ public class StateTests {
     }
 
     /**
-     * Ensure that we've linked every {@link ModState}.
+     * Ensure that we've linked every {@link LoaderState}.
      */
     @Test
     public void allModStatesLinked() {
-        Set<ModState> check = allLinkedCheck();
+        Set<LoaderState> check = allLinkedCheck();
         assertTrue("Need to implement " + check, check.isEmpty());
     }
 
     /**
-     * Ensure that we've ordered everything according to {@link ModState}.
+     * Ensure that we've ordered everything according to {@link LoaderState}.
      */
     @Test
     public void orderedLikeModState() {
-        ModState lastLink = null;
+        LoaderState lastLink = null;
         for (State state : State.values()) {
-            ModState stateLink = state.linkedState();
+            LoaderState stateLink = state.linkedState();
             if (lastLink == null) {
-                // ordered by mod state if null
+                // ordered by loader state if null
                 lastLink = stateLink;
                 continue;
             }
