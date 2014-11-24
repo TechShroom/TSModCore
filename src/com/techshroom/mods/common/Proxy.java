@@ -64,7 +64,7 @@ public class Proxy {
         /**
          * Construct state
          */
-        CONSTUCT(ModState.CONSTRUCTED),
+        CONSTRUCT(ModState.CONSTRUCTED),
         /**
          * Pre-init state
          */
@@ -323,15 +323,16 @@ public class Proxy {
      *            - a registerable object to register later
      */
     public final void registerRegisterableObject(RegisterableObject<?> regObj) {
-        int compareTo = regObj.registerState().compareTo(currentState);
-        if (compareTo < 0) {
+        int compareTo = regObj.registerState().compareTo(lastPassedState);
+        if (compareTo <= 0) {
             throw new IllegalStateException(
                     String.format("tried to register builder after its "
-                                          + "register state (%s/%s > %s/%s)",
+                                          + "register state (%s/%s >= %s/%s)",
                                   regObj.registerState(), regObj
                                           .registerState().ordinal(),
-                                  currentState, currentState.ordinal()));
-        } else if (compareTo == 0) {
+                                  lastPassedState, lastPassedState.ordinal()));
+        } else if (currentState != null
+                && regObj.registerState().compareTo(currentState) == 0) {
             duringStateBuilders.add(regObj);
             return;
         }
