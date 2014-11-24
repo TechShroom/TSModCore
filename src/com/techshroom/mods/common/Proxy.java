@@ -19,9 +19,12 @@ import com.techshroom.mods.common.proxybuilders.RegisterableObject;
 
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.LoaderState.ModState;
+import cpw.mods.fml.common.event.FMLConstructionEvent;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLStateEvent;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
@@ -97,6 +100,16 @@ public class Proxy {
                 tmp.put(state.linkedState, state);
             }
             modStateToStateMap = ImmutableMap.copyOf(tmp);
+        }
+
+        /**
+         * Convert a ModState to a State.
+         * 
+         * @param state - the ModState to map from
+         * @return the corresponding state
+         */
+        public static State from(ModState state) {
+            return modStateToStateMap.get(state);
         }
 
         private final ModState linkedState;
@@ -239,9 +252,9 @@ public class Proxy {
     /*
      * Note: this calls markInUse, which should always be a good idea.
      */
-    private void enter(State state) {
+    private void enter(FMLStateEvent state) {
         markInUse();
-        currentState = state;
+        currentState = State.from(state.getModState());
     }
 
     /*
@@ -265,7 +278,7 @@ public class Proxy {
     @SuppressWarnings("javadoc")
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public final void postInit(FMLPostInitializationEvent postInit) {
-        enter(State.POSTINIT);
+        enter(postInit);
         runRegObjHook();
         leave();
     }
@@ -273,7 +286,7 @@ public class Proxy {
     @SuppressWarnings("javadoc")
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public final void preInit(FMLPreInitializationEvent preInit) {
-        enter(State.PREINIT);
+        enter(preInit);
         runRegObjHook();
         leave();
     }
@@ -281,7 +294,23 @@ public class Proxy {
     @SuppressWarnings("javadoc")
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public final void init(FMLInitializationEvent init) {
-        enter(State.INIT);
+        enter(init);
+        runRegObjHook();
+        leave();
+    }
+
+    @SuppressWarnings("javadoc")
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public final void construct(FMLConstructionEvent construct) {
+        enter(construct);
+        runRegObjHook();
+        leave();
+    }
+
+    @SuppressWarnings("javadoc")
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public final void avalible(FMLLoadCompleteEvent avalible) {
+        enter(avalible);
         runRegObjHook();
         leave();
     }

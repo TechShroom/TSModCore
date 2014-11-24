@@ -3,7 +3,6 @@ package com.techshroom.mods.common.test;
 import static org.junit.Assert.*;
 
 import java.util.EnumSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
@@ -45,7 +44,6 @@ public class StateTests {
      */
     @Test
     public void orderedLikeModState() {
-        Map<ModState, State> stateMap = State.modStateToStateMap;
         ModState lastLink = null;
         for (State state : State.values()) {
             ModState stateLink = state.linkedState();
@@ -54,8 +52,8 @@ public class StateTests {
                 lastLink = stateLink;
                 continue;
             }
-            assertFalse(stateMap.get(stateLink) + " should be before "
-                                + stateMap.get(lastLink),
+            assertFalse(State.from(stateLink) + " should be before "
+                                + State.from(lastLink),
                         stateLink.compareTo(lastLink) <= 0);
             lastLink = stateLink;
         }
