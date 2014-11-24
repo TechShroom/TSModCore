@@ -108,7 +108,7 @@ public class Proxy {
         ERROR(LoaderState.ERRORED);
 
         /**
-         * LoaderState -> State mapping.
+         * LoaderState -&gt; State mapping.
          */
         public static final ImmutableMap<LoaderState, State> loaderStateMap;
         static {
