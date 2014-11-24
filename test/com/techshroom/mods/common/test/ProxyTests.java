@@ -8,10 +8,12 @@ import java.util.List;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.techshroom.mods.common.ClientProxy;
 import com.techshroom.mods.common.Proxy;
 import com.techshroom.mods.common.Proxy.State;
+import com.techshroom.mods.common.java8.function.Consumer;
 import com.techshroom.mods.common.proxybuilders.RegisterableObject;
 
 import cpw.mods.fml.common.event.FMLConstructionEvent;
@@ -60,14 +62,59 @@ public class ProxyTests {
      *             exceptions propagate
      */
     @Test
-    public void registerableObjectsRegister() throws Exception {
+    public void correctRegister() throws Exception {
+        forEachState(new Consumer<List<Object>>() {
+            @Override
+            public void accept(List<Object> input) {
+                State state = (State) input.get(0);
+                State[] pre = (State[]) input.get(1);
+                correctRegProcedure(state, pre);
+            }
+        });
+    }
+
+    /**
+     * Proper firing on registerable objects by proxies for edge case.
+     * 
+     * @throws Exception
+     *             exceptions propagate
+     */
+    @Test
+    public void edgeRegister() throws Exception {
+        forEachState(new Consumer<List<Object>>() {
+            @Override
+            public void accept(List<Object> input) {
+                State state = (State) input.get(0);
+                State[] pre = (State[]) input.get(1);
+                edgeRegProcedure(state, pre);
+            }
+        });
+    }
+
+    /**
+     * Proper firing on registerable objects by proxies for incorrect case.
+     * 
+     * @throws Exception
+     *             exceptions propagate
+     */
+    @Test
+    public void badRegister() throws Exception {
+        forEachState(new Consumer<List<Object>>() {
+            @Override
+            public void accept(List<Object> input) {
+                State state = (State) input.get(0);
+                State[] pre = (State[]) input.get(1);
+                incorrectRegProcedure(state, pre);
+            }
+        });
+    }
+
+    private void forEachState(Consumer<List<Object>> doThis) {
         List<State> pre = Lists.newArrayListWithCapacity(State.values().length);
         for (State state : State.values()) {
             if (state != State.STARTUP) {
                 State[] prevals = pre.toArray(emptyArray(State.class));
-                correctRegProcedure(state, prevals);
-                edgeRegProcedure(state, prevals);
-                incorrectRegProcedure(state, prevals);
+                doThis.accept(ImmutableList.<Object> of(state, prevals));
             }
             pre.add(state);
         }
