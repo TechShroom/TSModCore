@@ -14,6 +14,7 @@ import com.techshroom.mods.common.ClientProxy;
 import com.techshroom.mods.common.Proxy;
 import com.techshroom.mods.common.Proxy.State;
 import com.techshroom.mods.common.java8.function.Consumer;
+import com.techshroom.mods.common.proxybuilders.PhasePrinter;
 import com.techshroom.mods.common.proxybuilders.RegisterableObject;
 
 import cpw.mods.fml.common.event.*;
@@ -24,6 +25,7 @@ import cpw.mods.fml.common.event.*;
  * @author Kenzie Togami
  */
 public class ProxyTests {
+    private static ProxyModContainer container, containerClient;
     private static Proxy regular, client;
 
     /**
@@ -33,7 +35,11 @@ public class ProxyTests {
     public static void setProxy() {
         System.setProperty(Proxy.AUTO_BIND_PROP_KEY, Boolean.FALSE.toString());
         regular = new Proxy();
+        container = new ProxyModContainer(regular);
+        PhasePrinter.addPrinter(regular, container.getModId());
         client = new ClientProxy();
+        containerClient = new ProxyModContainer(client);
+        PhasePrinter.addPrinter(client, containerClient.getModId());
     }
 
     /**
@@ -225,7 +231,10 @@ public class ProxyTests {
                 proxy.construct(new FMLConstructionEvent(null, null, null));
                 break;
             case PREINIT:
-                proxy.preInit(new FMLPreInitializationEvent(null, null));
+                FMLPreInitializationEvent preInit =
+                        new FMLPreInitializationEvent(null, null);
+                preInit.applyModContainer(new ProxyModContainer(proxy));
+                proxy.preInit(preInit);
                 break;
             case INIT:
                 proxy.init(new FMLInitializationEvent());

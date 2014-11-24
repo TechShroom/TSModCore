@@ -8,6 +8,9 @@ import java.util.Deque;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import net.minecraftforge.common.MinecraftForge;
 
 import com.google.common.collect.HashMultimap;
@@ -342,6 +345,27 @@ public class Proxy {
         markDone();
     }
 
+    private Logger logger = LogManager.getLogger();
+
+    /**
+     * Get proxy logger for logging things.
+     * 
+     * @return a logger
+     */
+    public Logger getLogger() {
+        return logger;
+    }
+
+    /**
+     * Try to use a specific logger.
+     * 
+     * @param modid
+     *            - the mod ID to pass
+     */
+    public void tryForModLog(String modid) {
+        logger = LogManager.getLogger(modid);
+    }
+
     @SuppressWarnings("javadoc")
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public final void postInit(FMLPostInitializationEvent postInit) {
@@ -354,6 +378,7 @@ public class Proxy {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public final void preInit(FMLPreInitializationEvent preInit) {
         enter(preInit);
+        logger = preInit.getModLog();
         runRegObjHook();
         leave();
     }
