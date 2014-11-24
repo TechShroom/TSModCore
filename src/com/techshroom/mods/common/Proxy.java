@@ -105,7 +105,8 @@ public class Proxy {
         /**
          * Convert a ModState to a State.
          * 
-         * @param state - the ModState to map from
+         * @param state
+         *            - the ModState to map from
          * @return the corresponding state
          */
         public static State from(ModState state) {
@@ -355,5 +356,14 @@ public class Proxy {
     protected void regObjHook(RegisterableObject<?> rbBuilder) throws Throwable {
         rbBuilder.create();
         rbBuilder.register();
+    }
+
+    /**
+     * Returns {@code true} if this Proxy is on the client side.
+     * 
+     * @return {@code true} if we are running a client instance.
+     */
+    public boolean isClient() {
+        return false;
     }
 }

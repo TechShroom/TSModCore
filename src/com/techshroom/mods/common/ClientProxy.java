@@ -16,10 +16,17 @@ public class ClientProxy
     /**
      * Qualified name of this class.
      */
-    public static final String QUALNAME = "com.techshroom.mods.common.ClientProxy";
+    public static final String QUALNAME =
+            "com.techshroom.mods.common.ClientProxy";
+
     @Override
     protected void regObjHook(RegisterableObject<?> regObj) throws Throwable {
         super.regObjHook(regObj);
         regObj.registerClient();
+    }
+
+    @Override
+    public boolean isClient() {
+        return true;
     }
 }
