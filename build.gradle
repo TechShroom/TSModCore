@@ -107,8 +107,7 @@ task updateVersion(type: Copy) {
     from(sourceSets.main.java.srcDirs)
     into 'build/sources/java'
     filter(ReplaceTokens, tokens: [
-        'VERSION': project.version,
-        'BUILD_NUMBER': build_number
+        'VERSION': project.version
     ])
 }
 
@@ -125,7 +124,6 @@ processResources {
         include '**.info'
         filter(ReplaceTokens, tokens: [
             'VERSION': project.version,
-            'BUILD_NUMBER': build_number,
             'MC_VERSION': config.mc.version,
             'FORGE_VERSION': config.forge.version,
             'CCL_VERSION': config.ccl.version
