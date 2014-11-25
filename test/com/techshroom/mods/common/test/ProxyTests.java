@@ -5,11 +5,12 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.eventbus.EventBus;
 import com.techshroom.mods.common.ClientProxy;
 import com.techshroom.mods.common.Proxy;
 import com.techshroom.mods.common.Proxy.State;
@@ -25,14 +26,14 @@ import cpw.mods.fml.common.event.*;
  * @author Kenzie Togami
  */
 public class ProxyTests {
-    private static ProxyModContainer container, containerClient;
-    private static Proxy regular, client;
+    private ProxyModContainer container, containerClient;
+    private Proxy regular, client;
 
     /**
      * Set test Proxy class.
      */
-    @BeforeClass
-    public static void setProxy() {
+    @Before
+    public void setProxy() {
         System.setProperty(Proxy.AUTO_BIND_PROP_KEY, Boolean.FALSE.toString());
         regular = new Proxy();
         container = new ProxyModContainer(regular);
@@ -52,6 +53,19 @@ public class ProxyTests {
     public void refactorCheck() throws Exception {
         assertEquals(Proxy.class.getName(), Proxy.QUALNAME);
         assertEquals(ClientProxy.class.getName(), ClientProxy.QUALNAME);
+    }
+
+    /**
+     * Register the proxies on event busses.
+     * 
+     * @throws Exception
+     *             exceptions propagate
+     */
+    @Test
+    public void tryEventBusRegister() throws Exception {
+        EventBus bus = new EventBus("proxy");
+        bus.register(regular);
+        bus.register(client);
     }
 
     private final boolean[] flagbase = new boolean[3];
