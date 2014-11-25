@@ -241,6 +241,7 @@ public class Proxy {
         Field tmp = null;
         try {
             tmp = FMLModContainer.class.getDeclaredField("eventBus");
+            tmp.setAccessible(true);
         } catch (Throwable t) {
             t.printStackTrace();
             FMLCommonHandler.instance().exitJava(1, false);
