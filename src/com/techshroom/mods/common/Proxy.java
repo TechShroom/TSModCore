@@ -8,10 +8,10 @@ import java.util.Deque;
 import java.util.Map;
 import java.util.Set;
 
+import net.minecraftforge.common.MinecraftForge;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import net.minecraftforge.common.MinecraftForge;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMap;
@@ -19,15 +19,17 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.techshroom.mods.common.proxybuilders.RegisterableObject;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.FMLLog;
+import cpw.mods.fml.common.FMLModContainer;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.LoaderState;
 import cpw.mods.fml.common.LoaderState.ModState;
 import cpw.mods.fml.common.event.*;
-import cpw.mods.fml.common.eventhandler.EventPriority;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 /**
  * Core proxy class for mods to extend.
@@ -234,6 +236,18 @@ public class Proxy {
         return activeProxies.get();
     }
 
+    private static final Field FMLModContainer_eventBus;
+    static {
+        Field tmp = null;
+        try {
+            tmp = FMLModContainer.class.getDeclaredField("eventBus");
+        } catch (Throwable t) {
+            t.printStackTrace();
+            FMLCommonHandler.instance().exitJava(1, false);
+        }
+        FMLModContainer_eventBus = tmp;
+    }
+
     /**
      * Attach a proxy to {@link MinecraftForge#EVENT_BUS}. Called by
      * {@code Proxy.<init>}.
@@ -242,7 +256,16 @@ public class Proxy {
      *            - proxy
      */
     private final static void attachProxy(Proxy p) {
-        MinecraftForge.EVENT_BUS.register(p);
+        try {
+            EventBus bus =
+                    (EventBus) FMLModContainer_eventBus.get(Loader.instance()
+                            .activeModContainer());
+            bus.register(p);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     {
@@ -367,7 +390,7 @@ public class Proxy {
     }
 
     @SuppressWarnings("javadoc")
-    @SubscribeEvent(priority = EventPriority.LOWEST)
+    @Subscribe
     public final void postInit(FMLPostInitializationEvent postInit) {
         enter(postInit);
         runRegObjHook();
@@ -375,7 +398,7 @@ public class Proxy {
     }
 
     @SuppressWarnings("javadoc")
-    @SubscribeEvent(priority = EventPriority.LOWEST)
+    @Subscribe
     public final void preInit(FMLPreInitializationEvent preInit) {
         enter(preInit);
         logger = preInit.getModLog();
@@ -384,7 +407,7 @@ public class Proxy {
     }
 
     @SuppressWarnings("javadoc")
-    @SubscribeEvent(priority = EventPriority.LOWEST)
+    @Subscribe
     public final void init(FMLInitializationEvent init) {
         enter(init);
         runRegObjHook();
@@ -392,7 +415,7 @@ public class Proxy {
     }
 
     @SuppressWarnings("javadoc")
-    @SubscribeEvent(priority = EventPriority.LOWEST)
+    @Subscribe
     public final void construct(FMLConstructionEvent construct) {
         enter(construct);
         runRegObjHook();
@@ -400,7 +423,7 @@ public class Proxy {
     }
 
     @SuppressWarnings("javadoc")
-    @SubscribeEvent(priority = EventPriority.LOWEST)
+    @Subscribe
     public final void avalible(FMLLoadCompleteEvent avalible) {
         enter(avalible);
         runRegObjHook();
@@ -408,7 +431,7 @@ public class Proxy {
     }
 
     @SuppressWarnings("javadoc")
-    @SubscribeEvent(priority = EventPriority.LOWEST)
+    @Subscribe
     public final void aboutToStart(FMLServerAboutToStartEvent aboutToStart) {
         enter(aboutToStart);
         runRegObjHook();
@@ -416,7 +439,7 @@ public class Proxy {
     }
 
     @SuppressWarnings("javadoc")
-    @SubscribeEvent(priority = EventPriority.LOWEST)
+    @Subscribe
     public final void startBegin(FMLServerStartingEvent startBegin) {
         enter(startBegin);
         runRegObjHook();
@@ -424,7 +447,7 @@ public class Proxy {
     }
 
     @SuppressWarnings("javadoc")
-    @SubscribeEvent(priority = EventPriority.LOWEST)
+    @Subscribe
     public final void startEnd(FMLServerStartedEvent startEnd) {
         enter(startEnd);
         runRegObjHook();
@@ -432,7 +455,7 @@ public class Proxy {
     }
 
     @SuppressWarnings("javadoc")
-    @SubscribeEvent(priority = EventPriority.LOWEST)
+    @Subscribe
     public final void stopBegin(FMLServerStoppingEvent stopBegin) {
         enter(stopBegin);
         runRegObjHook();
@@ -440,7 +463,7 @@ public class Proxy {
     }
 
     @SuppressWarnings("javadoc")
-    @SubscribeEvent(priority = EventPriority.LOWEST)
+    @Subscribe
     public final void stopEnd(FMLServerStoppedEvent stopEnd) {
         enter(stopEnd);
         runRegObjHook();
