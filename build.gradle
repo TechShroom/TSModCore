@@ -68,7 +68,7 @@ dependencies {
     compile "codechicken:CodeChickenLib:${config.mc.version}-${config.ccl.version}:dev"
     compile files("libs/StepBuilder-${config.sb.version}.jar")
 
-    testCompile "junit:junit:4.12"
+    testCompile "junit:junit:4.11"
 }
 
 version =  "${project.config.mod.version}"
