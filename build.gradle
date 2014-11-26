@@ -152,19 +152,19 @@ task javadocJar(type: Jar) {
 }
 
 // Add in an mcp named jar, for those who wish to run in a development environment (assuming mcp naming matches)
-//task deobfJar(type: Jar) {
-//    from sourceSets.main.output
-//    classifier = 'dev'
-//    version = "${project.minecraft.version}-${project.version}"
-//    manifest {
-//        attributes 'FMLCorePlugin': 'codechicken.core.launch.DepLoader'
-//        attributes 'FMLCorePluginContainsFMLMod': 'true'
-//    }
-//}
+task deobfJar(type: Jar) {
+    from sourceSets.main.output
+    classifier = 'dev'
+    version = "${project.minecraft.version}-${project.version}"
+    manifest {
+        attributes 'FMLCorePlugin': 'codechicken.core.launch.DepLoader'
+        attributes 'FMLCorePluginContainsFMLMod': 'true'
+    }
+}
 
 // Tell the artifact system about our extra jars
 artifacts {
-    archives sourceJar, javadocJar
+    archives sourceJar, javadocJar, deobfJar
 }
 if (!_hasProperty("TRAVIS") || !_property("TRAVIS").toBoolean()) { //temp until we secure it
 apply plugin: 'maven'
