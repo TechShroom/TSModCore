@@ -478,11 +478,10 @@ public class Proxy {
      *            - a registerable object to register later
      */
     public final void registerRegisterableObject(RegisterableObject<?> regObj) {
-        int compareTo = regObj.registerState().compareTo(lastPassedState);
-        if (compareTo <= 0) {
+        if (!okayToRegisterForObj(regObj)) {
             throw new IllegalStateException(
                     String.format("tried to register builder after its "
-                                          + "register state (%s/%s >= %s/%s)",
+                                          + "register state (%s/%s <= %s/%s)",
                                   regObj.registerState(), regObj
                                           .registerState().ordinal(),
                                   lastPassedState, lastPassedState.ordinal()));
@@ -492,6 +491,34 @@ public class Proxy {
             return;
         }
         builders.put(regObj.registerState(), regObj);
+    }
+
+    /**
+     * Check if it is okay to try and register the given object.
+     * 
+     * @param regObj
+     *            - registerable object to check
+     * @return {@code true} if it is okay to call
+     *         {@link #registerRegisterableObject(RegisterableObject)}, false
+     *         otherwise.
+     */
+    public boolean okayToRegisterForObj(RegisterableObject<?> regObj) {
+        return okayToRegisterForState(regObj.registerState());
+    }
+
+    /**
+     * Check if it is okay to register anything that has the given state.
+     * 
+     * @param state
+     *            - state to check
+     * @return {@code true} if it is okay to call
+     *         {@link #registerRegisterableObject(RegisterableObject)}, false
+     *         otherwise.
+     */
+    public boolean okayToRegisterForState(State state) {
+        // state is bigger than last passed or is the current state
+        return state.compareTo(lastPassedState) > 0
+                || (currentState != null && state.compareTo(currentState) == 0);
     }
 
     private void runRegObjHook() {

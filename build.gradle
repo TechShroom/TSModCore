@@ -82,6 +82,7 @@ minecraft {
     } else {
         runDir = "run"
     }
+    replace '${version}', project.version
 }
 
 sourceSets {
@@ -107,7 +108,9 @@ task updateVersion(type: Copy) {
     from(sourceSets.main.java.srcDirs)
     into 'build/sources/java'
     filter(ReplaceTokens, tokens: [
-        'VERSION': project.version
+        'VERSION': config.mod.version.toString(),
+        'MODID': config.mod.id.toString(),
+        'SUPPORTED_VERSIONS': config.mod.mcversions.toString()
     ])
 }
 
@@ -123,10 +126,12 @@ processResources {
     from(sourceSets.main.resources.srcDirs) {
         include '**.info'
         filter(ReplaceTokens, tokens: [
-            'VERSION': project.version,
+            'VERSION': config.mod.version,
             'MC_VERSION': config.mc.version,
             'FORGE_VERSION': config.forge.version,
-            'CCL_VERSION': config.ccl.version
+            'CCL_VERSION': config.ccl.version,
+            'MODID': config.mod.id,
+            'SUPPORTED_VERSIONS': config.mod.mcversions
         ])
     }
     // Copy everything else

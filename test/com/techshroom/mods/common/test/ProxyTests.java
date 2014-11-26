@@ -3,6 +3,7 @@ package com.techshroom.mods.common.test;
 import static com.techshroom.mods.common.Generics.emptyArray;
 import static org.junit.Assert.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
@@ -214,10 +215,12 @@ public class ProxyTests {
         }
         try {
             proxy.registerRegisterableObject(regObjTester(state, flags));
-            fail("Should not have registered");
+            fail("Should not have proceeded, expected exception (state="
+                    + state + ",flags=" + Arrays.toString(flags));
         } catch (Exception e) {
-            checkNotRegistered(flags, state, isClient);
+            // System.err.println("caught exception of " + e.getClass());
         }
+        checkNotRegistered(flags, state, isClient);
     }
 
     private void checkNotRegistered(boolean[] rf, State state, boolean client) {

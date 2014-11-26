@@ -12,8 +12,10 @@ public final class PhasePrinter {
     /**
      * Attach a new PhasePrinter to the proxy.
      * 
-     * @param proxy - proxy to attach to
-     * @param modid - mod ID to use
+     * @param proxy
+     *            - proxy to attach to
+     * @param modid
+     *            - mod ID to use
      * @return the attached phase printer
      */
     public static PhasePrinter addPrinter(Proxy proxy, String modid) {
@@ -36,8 +38,12 @@ public final class PhasePrinter {
      */
     public void attachToProxy(Proxy proxy) {
         for (State state : State.values()) {
-            if (state.linkedState().hasEvent())
+            if (!proxy.okayToRegisterForState(state)) {
+                continue; // already passed, no need to call
+            }
+            if (state.linkedState().hasEvent()) {
                 proxy.registerRegisterableObject(printerROForState(state));
+            }
         }
     }
 
