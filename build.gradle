@@ -116,6 +116,10 @@ task updateVersion(type: Copy) {
 
 compileJava.dependsOn updateVersion
 
+tasks.withType(JavaCompile) {
+    options.incremental = true
+}
+
 processResources {
     //redo task if any of these properties change
     inputs.property "version", project.version
