@@ -47,11 +47,15 @@ public class RBBuilder<BlockType extends Block, TileType extends TileEntity>
     public static class NoTile<BlockType extends Block>
             extends RBBuilder<BlockType, TileEntity> {
         /**
+         * Creates a new builder using the given class and ID.
+         * 
          * @param blockClass
          *            - block class to use
+         * @param blockID
+         *            - the block ID to register
          */
-        public NoTile(Class<BlockType> blockClass) {
-            super(blockClass);
+        public NoTile(Class<BlockType> blockClass, String blockID) {
+            super(blockClass, blockID);
         }
 
         @Override
@@ -158,7 +162,8 @@ public class RBBuilder<BlockType extends Block, TileType extends TileEntity>
     }
 
     private final Class<BlockType> blockClass;
-    private Optional<String> blockID, blockTextureName;
+    private final String blockID;
+    private Optional<String> blockName, blockTextureName;
     private Optional<CreativeTabs> creativeTab = Optional.absent();
     private Optional<RBBuilder.HardnessValue> hardness = Optional.absent();
     private Optional<HarvestData.BlockExtension> harvestData = Optional
@@ -173,20 +178,23 @@ public class RBBuilder<BlockType extends Block, TileType extends TileEntity>
             .absent();
     private Optional<Class<ItemBlock>> itemBlockClass = Optional.absent();
     {
-        blockID = blockTextureName = Optional.absent();
+        blockName = blockTextureName = Optional.absent();
         resistance = lightLevel = OptionalFloat.absent();
     }
     private BlockType created;
     private boolean registerFlag;
 
     /**
-     * Creates a new builder using the given class.
+     * Creates a new builder using the given class and ID.
      * 
      * @param blockClass
      *            - block class to use
+     * @param blockID
+     *            - the block ID to register
      */
-    public RBBuilder(Class<BlockType> blockClass) {
+    public RBBuilder(Class<BlockType> blockClass, String blockID) {
         this.blockClass = blockClass;
+        this.blockID = blockID;
     }
 
     /**
@@ -199,20 +207,20 @@ public class RBBuilder<BlockType extends Block, TileType extends TileEntity>
     }
 
     /**
-     * @return Optional of block ID
+     * @return Optional of block name
      */
-    public Optional<String> getBlockID() {
-        return blockID;
+    public Optional<String> getBlockName() {
+        return blockName;
     }
 
     /**
-     * Set the target ID.
+     * Set the target name.
      * 
-     * @param blockID
-     *            - block ID to set
+     * @param blockName
+     *            - block name to set
      */
-    public void setBlockID(String blockID) {
-        this.blockID = Optional.of(blockID);
+    public void setBlockName(String blockName) {
+        this.blockName = Optional.of(blockName);
     }
 
     /**
@@ -435,8 +443,8 @@ public class RBBuilder<BlockType extends Block, TileType extends TileEntity>
                 throw new IllegalStateException(blockClass
                         + " does not allow access to its nullary constructor.");
             }
-            if (blockID.isPresent()) {
-                created.setBlockName(blockID.get());
+            if (blockName.isPresent()) {
+                created.setBlockName(blockName.get());
             }
             if (blockTextureName.isPresent()) {
                 created.setBlockTextureName(blockTextureName.get());
@@ -494,14 +502,12 @@ public class RBBuilder<BlockType extends Block, TileType extends TileEntity>
         }
         checkState(created != null, "Not created");
         if (itemBlockClass.isPresent()) {
-            GameRegistry.registerBlock(created, itemBlockClass.get(),
-                                       created.getUnlocalizedName());
+            GameRegistry.registerBlock(created, itemBlockClass.get(), blockID);
         } else {
-            GameRegistry.registerBlock(created, created.getUnlocalizedName());
+            GameRegistry.registerBlock(created, blockID);
         }
         if (tileEntityClass.isPresent()) {
-            GameRegistry.registerTileEntity(tileEntityClass.get(),
-                                            created.getUnlocalizedName());
+            GameRegistry.registerTileEntity(tileEntityClass.get(), blockID);
         }
         registerFlag = true;
     }
