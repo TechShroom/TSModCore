@@ -262,10 +262,9 @@ public class Proxy {
                     (EventBus) FMLModContainer_eventBus.get(Loader.instance()
                             .activeModContainer());
             bus.register(p);
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            FMLCommonHandler.instance().exitJava(1, false);
         }
     }
 
