@@ -6,6 +6,8 @@ import static org.junit.Assert.*;
 import java.util.Arrays;
 import java.util.List;
 
+import net.minecraftforge.fml.common.event.*;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,8 +20,6 @@ import com.techshroom.mods.common.Proxy.State;
 import com.techshroom.mods.common.java8.function.Consumer;
 import com.techshroom.mods.common.proxybuilders.PhasePrinter;
 import com.techshroom.mods.common.proxybuilders.RegisterableObject;
-
-import cpw.mods.fml.common.event.*;
 
 /**
  * Tests for proxy classes.

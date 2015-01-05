@@ -1,9 +1,9 @@
 package com.techshroom.mods.common;
 
-import com.techshroom.mods.common.proxybuilders.RegisterableObject;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import com.techshroom.mods.common.proxybuilders.RegisterableObject;
 
 /**
  * Client version of Proxy.

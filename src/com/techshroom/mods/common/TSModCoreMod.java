@@ -1,11 +1,11 @@
 package com.techshroom.mods.common;
 
-import com.techshroom.mods.common.proxybuilders.PhasePrinter;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLConstructionEvent;
 
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.FMLConstructionEvent;
+import com.techshroom.mods.common.proxybuilders.PhasePrinter;
 
 /**
  * TSModCore central mod class.

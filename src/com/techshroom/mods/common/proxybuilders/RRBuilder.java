@@ -14,6 +14,7 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
@@ -26,8 +27,6 @@ import com.techshroom.mods.common.Proxy.State;
 import com.techshroom.tscore.util.stepbuilder.FinalStep;
 import com.techshroom.tscore.util.stepbuilder.Step;
 import com.techshroom.tscore.util.stepbuilder.StepBuilder;
-
-import cpw.mods.fml.common.registry.GameRegistry;
 
 /**
  * @author Kenzie Togami

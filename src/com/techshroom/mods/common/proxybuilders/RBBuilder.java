@@ -10,6 +10,10 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Objects.ToStringHelper;
@@ -18,11 +22,6 @@ import com.google.common.base.Throwables;
 import com.techshroom.mods.common.Proxy.State;
 import com.techshroom.mods.common.java8.optional.OptionalFloat;
 import com.techshroom.mods.common.java8.optional.OptionalInt;
-
-import cpw.mods.fml.client.registry.ClientRegistry;
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * Builder/RegisterableObject for blocks.
@@ -40,7 +39,7 @@ public class RBBuilder<BlockType extends Block, TileType extends TileEntity>
      * Rough no tile implementation.
      * 
      * @author Kenzie Togami
-     *
+     *  
      * @param <BlockType>
      *            - block type to build
      */
@@ -163,7 +162,7 @@ public class RBBuilder<BlockType extends Block, TileType extends TileEntity>
 
     private final Class<BlockType> blockClass;
     private final String blockID;
-    private Optional<String> blockName, blockTextureName;
+    private Optional<String> blockName;
     private Optional<CreativeTabs> creativeTab = Optional.absent();
     private Optional<RBBuilder.HardnessValue> hardness = Optional.absent();
     private Optional<HarvestData.BlockExtension> harvestData = Optional
@@ -178,7 +177,7 @@ public class RBBuilder<BlockType extends Block, TileType extends TileEntity>
             .absent();
     private Optional<Class<ItemBlock>> itemBlockClass = Optional.absent();
     {
-        blockName = blockTextureName = Optional.absent();
+        blockName = Optional.absent();
         resistance = lightLevel = OptionalFloat.absent();
     }
     private BlockType created;
@@ -221,23 +220,6 @@ public class RBBuilder<BlockType extends Block, TileType extends TileEntity>
      */
     public void setBlockName(String blockName) {
         this.blockName = Optional.of(blockName);
-    }
-
-    /**
-     * @return Optional of texture name
-     */
-    public Optional<String> getBlockTextureName() {
-        return blockTextureName;
-    }
-
-    /**
-     * Set the texture name.
-     * 
-     * @param blockTextureName
-     *            - block texture name.
-     */
-    public void setBlockTextureName(String blockTextureName) {
-        this.blockTextureName = Optional.of(blockTextureName);
     }
 
     /**
@@ -444,10 +426,7 @@ public class RBBuilder<BlockType extends Block, TileType extends TileEntity>
                         + " does not allow access to its nullary constructor.");
             }
             if (blockName.isPresent()) {
-                created.setBlockName(blockName.get());
-            }
-            if (blockTextureName.isPresent()) {
-                created.setBlockTextureName(blockTextureName.get());
+                created.setUnlocalizedName(blockName.get());
             }
             if (creativeTab.isPresent()) {
                 created.setCreativeTab(creativeTab.get());
@@ -465,7 +444,7 @@ public class RBBuilder<BlockType extends Block, TileType extends TileEntity>
                 if (data.hasSpecificMetadata()) {
                     created.setHarvestLevel(data.getToolClassification(),
                                             data.getLevel(),
-                                            data.specificMetadata());
+                                            created.getStateFromMeta(data.specificMetadata()));
                 } else {
                     created.setHarvestLevel(data.getToolClassification(),
                                             data.getLevel());

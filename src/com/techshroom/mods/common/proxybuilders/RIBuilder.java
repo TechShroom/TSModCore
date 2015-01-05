@@ -6,6 +6,9 @@ import java.lang.reflect.Field;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Objects.ToStringHelper;
@@ -15,10 +18,6 @@ import com.techshroom.mods.common.Proxy.State;
 import com.techshroom.mods.common.java8.optional.OptionalFloat;
 import com.techshroom.mods.common.java8.optional.OptionalInt;
 
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
 public class RIBuilder<ItemType extends Item> implements
         RegisterableObject<ItemType> {
     public static enum Subtypes {
@@ -27,7 +26,7 @@ public class RIBuilder<ItemType extends Item> implements
 
     private final Class<ItemType> itemClass;
     private final String itemID;
-    private Optional<String> itemName, itemTextureName;
+    private Optional<String> itemName;
     private Optional<CreativeTabs> creativeTab = Optional.absent();
     private Optional<HarvestData> harvestData = null;
     private boolean full3D = false;
@@ -36,7 +35,7 @@ public class RIBuilder<ItemType extends Item> implements
     private Optional<String> potionEffect = Optional.absent();
     private boolean noRepair = false;
     {
-        itemName = itemTextureName = Optional.absent();
+        itemName = Optional.absent();
     }
     private ItemType created;
     private boolean registerFlag;
@@ -60,14 +59,6 @@ public class RIBuilder<ItemType extends Item> implements
 
     public void setItemName(String name) {
         this.itemName = Optional.of(name);
-    }
-
-    public Optional<String> getItemTextureName() {
-        return itemTextureName;
-    }
-
-    public void setBlockTextureName(String blockTextureName) {
-        this.itemTextureName = Optional.of(blockTextureName);
     }
 
     public Optional<CreativeTabs> getCreativeTab() {
@@ -186,9 +177,6 @@ public class RIBuilder<ItemType extends Item> implements
             }
             if (itemName.isPresent()) {
                 created.setUnlocalizedName(itemName.get());
-            }
-            if (itemTextureName.isPresent()) {
-                created.setTextureName(itemTextureName.get());
             }
             if (maxDamage.isPresent()) {
                 created.setMaxDamage(maxDamage.get());
