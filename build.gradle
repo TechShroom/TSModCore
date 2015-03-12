@@ -71,7 +71,7 @@ dependencies {
     testCompile "junit:junit:4.11"
 }
 
-version =  "${project.config.mod.version}"
+version =  "${project.mc.version.mod}.${project.config.mod.version}"
 
 // Setup the forge minecraft plugin data. Specify the preferred forge/minecraft version here
 minecraft {
