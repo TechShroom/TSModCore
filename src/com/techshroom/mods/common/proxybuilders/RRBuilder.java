@@ -36,6 +36,7 @@ import com.techshroom.tscore.util.stepbuilder.StepBuilder;
  */
 public abstract class RRBuilder<RecipeType> implements
         RegisterableObject<RecipeType> {
+
     /**
      * IRecipe extension of RRBuilder
      * 
@@ -192,11 +193,23 @@ public abstract class RRBuilder<RecipeType> implements
             return result;
         }
 
+        /**
+         * Set the experience given after smelting.
+         * 
+         * @param xp
+         *            - The experience value
+         * @return this
+         */
         public SmeltingExtension setXP(float xp) {
             this.xp = xp;
             return this;
         }
 
+        /**
+         * Returns the experience given after smelting.
+         * 
+         * @return The experience give after smelting
+         */
         public float getXP() {
             return xp;
         }
@@ -225,8 +238,80 @@ public abstract class RRBuilder<RecipeType> implements
         }
     }
 
+    private abstract static class SharedLink<Impl extends SharedLink<Impl>> {
+
+        protected abstract Map<Character, Object> getLinks();
+
+        /**
+         * Links a character to an ore dictionary entry.
+         * 
+         * @param c
+         *            - The character key
+         * @param dict
+         *            - The dictionary entry
+         * @return this
+         */
+        @SuppressWarnings("unchecked")
+        public Impl link(char c, String dict) {
+            getLinks().put(c, dict);
+            return (Impl) this;
+        }
+
+        /**
+         * Links a character to an item stack.
+         * 
+         * @param c
+         *            - The character key
+         * @param stack
+         *            - The item stack value
+         * @return this
+         */
+        @SuppressWarnings("unchecked")
+        public Impl link(char c, ItemStack stack) {
+            getLinks().put(c, stack);
+            return (Impl) this;
+        }
+
+        /**
+         * Links a character to a block.
+         * 
+         * @param c
+         *            - The character key
+         * @param block
+         *            - The block value
+         * @return this
+         */
+        public Impl link(char c, Block block) {
+            return link(c, new ItemStack(block));
+        }
+
+        /**
+         * Links a character to an item.
+         * 
+         * @param c
+         *            - The character key
+         * @param item
+         *            - The item value
+         * @return this
+         */
+        public Impl link(char c, Item item) {
+            return link(c, new ItemStack(item));
+        }
+
+    }
+
+    /**
+     * Extension for shaped recipes.
+     * 
+     * @author Kenzie Togami
+     */
     public static class ShapedRecipeExtension
             extends IRecipeExtension<ShapedOreRecipe> {
+        /**
+         * A very simple way to build shaped recipes.
+         * 
+         * @author Kenzie Togami
+         */
         public static class EasyShapedRecipeBuilder
                 implements
                 StepBuilder<ShapedRecipeExtension, EasyShapedRecipeBuilder.DesignStep> {
@@ -234,12 +319,25 @@ public abstract class RRBuilder<RecipeType> implements
             private final int rows, cols;
             private Map<Character, Object> links = Maps.newHashMap();
 
+            /**
+             * Creates a new recipe builder.
+             * 
+             * @param rowCount
+             *            - The amount of rows in the recipe
+             * @param colCount
+             *            - The amount of columns in the recipe
+             */
             public EasyShapedRecipeBuilder(int rowCount, int colCount) {
                 rows = rowCount;
                 cols = colCount;
                 recipeGrid = new String[rows][cols];
             }
 
+            /**
+             * The design step for the recipe builder.
+             * 
+             * @author Kenzie Togami
+             */
             public class DesignStep
                     implements
                     Step<ShapedRecipeExtension, EasyShapedRecipeBuilder.LinkStep> {
@@ -252,6 +350,15 @@ public abstract class RRBuilder<RecipeType> implements
                     checkState(!immutable, "Immutable");
                 }
 
+                /**
+                 * Sets the contents of the row.
+                 * 
+                 * @param row
+                 *            - The row to set
+                 * @param rowContent
+                 *            - The contents to put in the row
+                 * @return this
+                 */
                 public EasyShapedRecipeBuilder.DesignStep setRow(int row,
                         String[] rowContent) {
                     checkArgument(cols == rowContent.length, "unequal cols");
@@ -260,13 +367,31 @@ public abstract class RRBuilder<RecipeType> implements
                     return this;
                 }
 
+                /**
+                 * Sets the contents of the row.
+                 * 
+                 * @param row
+                 *            - The row to set
+                 * @param rowContent
+                 *            - The contents to put in the row
+                 * @return this
+                 */
                 public EasyShapedRecipeBuilder.DesignStep setRow(int row,
                         String rowContent) {
-                    checkArgument(cols == rowContent.length(), "unequal cols");
-                    checkImmutablity();
                     return setRow(row, rowContent.split(""));
                 }
 
+                /**
+                 * Sets the value at the given position.
+                 * 
+                 * @param x
+                 *            - The x coordinate
+                 * @param y
+                 *            - The y coordinate
+                 * @param val
+                 *            - The value to set
+                 * @return this
+                 */
                 public EasyShapedRecipeBuilder.DesignStep set(int x, int y,
                         String val) {
                     checkImmutablity();
@@ -274,41 +399,40 @@ public abstract class RRBuilder<RecipeType> implements
                     return this;
                 }
 
+                /**
+                 * Start the linking phase.
+                 * 
+                 * @return The step for linking characters to their types
+                 */
                 public LinkStep startLink() {
                     immutable = true;
                     return new LinkStep();
                 }
             }
 
+            /**
+             * The linking step for the recipe builder.
+             * 
+             * @author Kenzie Togami
+             */
             public class LinkStep
+                    extends SharedLink<LinkStep>
                     implements
                     Step<ShapedRecipeExtension, FinalStep<ShapedRecipeExtension>> {
                 private LinkStep() {
                 }
 
+                @Override
                 protected Map<Character, Object> getLinks() {
                     return links;
                 }
 
-                public LinkStep link(char c, String dict) {
-                    links.put(c, dict);
-                    return this;
-                }
-
-                public LinkStep link(char c, ItemStack stack) {
-                    links.put(c, stack);
-                    return this;
-                }
-
-                public LinkStep link(char c, Block block) {
-                    return link(c, new ItemStack(block));
-                }
-
-                public LinkStep link(char c, Item item) {
-                    return link(c, new ItemStack(item));
-                }
-
-                public FinalStep<ShapedRecipeExtension> step() {
+                /**
+                 * Finishes assembling parts for the ShapedRecipeExtension.
+                 * 
+                 * @return The build step
+                 */
+                public FinalStep<ShapedRecipeExtension> prep() {
                     links = ImmutableMap.copyOf(links);
                     return new FinalStep<ShapedRecipeExtension>() {
                         @Override
@@ -346,25 +470,56 @@ public abstract class RRBuilder<RecipeType> implements
         private final LinkedList<Object> inputStack = Lists.newLinkedList();
         private ItemStack result;
 
+        /**
+         * Returns the result of this crafting recipe.
+         * 
+         * @return The result of this crafting recipe
+         */
         public ItemStack getResult() {
             return result;
         }
 
+        /**
+         * Sets the result of this crafting recipe.
+         * 
+         * @param result
+         *            - The result item stack
+         * @return this
+         */
         public ShapedRecipeExtension setResult(ItemStack result) {
             this.result = result;
             return this;
         }
 
+        /**
+         * Returns the input recipe stack.
+         * 
+         * @return The input recipe stack
+         */
         public LinkedList<Object> getInputStack() {
             return inputStack;
         }
 
+        /**
+         * Sets the contents of the input recipe stack.
+         * 
+         * @param stack
+         *            - The new stack data
+         * @return this
+         */
         public ShapedRecipeExtension setInputStack(Collection<Object> stack) {
             inputStack.clear();
             inputStack.addAll(stack);
             return this;
         }
 
+        /**
+         * Pushes an object on to the stack.
+         * 
+         * @param o
+         *            - The object to push
+         * @return this
+         */
         public ShapedRecipeExtension push(Object o) {
             inputStack.push(o);
             return this;
@@ -380,73 +535,113 @@ public abstract class RRBuilder<RecipeType> implements
         }
     }
 
+    /**
+     * Extension for shapeless recipes.
+     * 
+     * @author Kenzie Togami
+     */
     public static class ShapelessRecipeExtension
             extends IRecipeExtension<ShapelessOreRecipe> {
+        /**
+         * Builder for shapeless recipes.
+         * 
+         * @author Kenzie Togami
+         */
         public static class EasyShapelessRecipeBuilder
                 implements
                 StepBuilder<ShapelessRecipeExtension, EasyShapelessRecipeBuilder.DesignStep> {
             private List<String> recipe = Lists.newArrayList();
             private Map<Character, Object> links = Maps.newHashMap();
 
+            /**
+             * The design step for the builder.
+             * 
+             * @author Kenzie Togami
+             */
             public class DesignStep
                     implements
                     Step<ShapelessRecipeExtension, EasyShapelessRecipeBuilder.LinkStep> {
                 private DesignStep() {
                 }
 
+                /**
+                 * Add an object on to the recipe.
+                 * 
+                 * @param bit
+                 *            - The object to add
+                 * @return this
+                 */
                 public EasyShapelessRecipeBuilder.DesignStep add(String bit) {
                     return addAll(bit);
                 }
 
+                /**
+                 * Add some objects on to the recipe.
+                 * 
+                 * @param bits
+                 *            - The objects to add
+                 * @return this
+                 */
                 public EasyShapelessRecipeBuilder.DesignStep addAll(
                         String... bits) {
                     return addAll(Arrays.asList(bits));
                 }
 
+                /**
+                 * Add some objects on to the recipe.
+                 * 
+                 * @param bits
+                 *            - The objects to add
+                 * @return this
+                 */
                 public EasyShapelessRecipeBuilder.DesignStep addAll(
                         Collection<String> bits) {
                     recipe.addAll(bits);
                     return this;
                 }
 
-                public List<String> recipe() {
+                /**
+                 * Returns the recipe list.
+                 * 
+                 * @return The recipe list
+                 */
+                public List<String> getRecipe() {
                     return recipe;
                 }
 
+                /**
+                 * Starts the linking step.
+                 * 
+                 * @return The linking step
+                 */
                 public LinkStep startLink() {
                     recipe = ImmutableList.copyOf(recipe);
                     return new LinkStep();
                 }
             }
 
+            /**
+             * The linking step for the builder.
+             * 
+             * @author Kenzie Togami
+             */
             public class LinkStep
+                    extends SharedLink<LinkStep>
                     implements
                     Step<ShapelessRecipeExtension, FinalStep<ShapelessRecipeExtension>> {
                 private LinkStep() {
                 }
 
+                @Override
                 protected Map<Character, Object> getLinks() {
                     return links;
                 }
 
-                public LinkStep link(char c, String dict) {
-                    links.put(c, dict);
-                    return this;
-                }
-
-                public LinkStep link(char c, ItemStack stack) {
-                    links.put(c, stack);
-                    return this;
-                }
-
-                public LinkStep link(char c, Block block) {
-                    return link(c, new ItemStack(block));
-                }
-
-                public LinkStep link(char c, Item item) {
-                    return link(c, new ItemStack(item));
-                }
-
+                /**
+                 * Finishes assembling parts for the ShapelessRecipeExtension.
+                 * 
+                 * @return The build step
+                 */
                 public FinalStep<ShapelessRecipeExtension> prep() {
                     links = ImmutableMap.copyOf(links);
                     return new FinalStep<ShapelessRecipeExtension>() {
@@ -482,25 +677,56 @@ public abstract class RRBuilder<RecipeType> implements
         private final LinkedList<Object> inputStack = Lists.newLinkedList();
         private ItemStack result;
 
+        /**
+         * Returns the result of this crafting recipe.
+         * 
+         * @return The result of this crafting recipe
+         */
         public ItemStack getResult() {
             return result;
         }
 
+        /**
+         * Sets the result of this crafting recipe.
+         * 
+         * @param result
+         *            - The result item stack
+         * @return this
+         */
         public ShapelessRecipeExtension setResult(ItemStack result) {
             this.result = result;
             return this;
         }
 
+        /**
+         * Returns the input recipe stack.
+         * 
+         * @return The input recipe stack
+         */
         public LinkedList<Object> getInputStack() {
             return inputStack;
         }
 
+        /**
+         * Sets the contents of the input recipe stack.
+         * 
+         * @param stack
+         *            - The new stack data
+         * @return this
+         */
         public ShapelessRecipeExtension setInputStack(Collection<Object> stack) {
             inputStack.clear();
             inputStack.addAll(stack);
             return this;
         }
 
+        /**
+         * Pushes an object on to the stack.
+         * 
+         * @param o
+         *            - The object to push
+         * @return this
+         */
         public ShapelessRecipeExtension push(Object o) {
             inputStack.push(o);
             return this;

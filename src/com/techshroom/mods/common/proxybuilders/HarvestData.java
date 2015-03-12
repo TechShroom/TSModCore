@@ -2,6 +2,7 @@ package com.techshroom.mods.common.proxybuilders;
 
 import static com.google.common.base.Preconditions.*;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 
 import com.google.common.base.Objects;
 import com.techshroom.mods.common.java8.function.Consumer;
@@ -15,7 +16,7 @@ import com.techshroom.mods.common.java8.optional.OptionalInt;
 public class HarvestData {
     /**
      * Extension of HarvestData for {@link Block#setHarvestLevel(String, int)}
-     * and {@link Block#setHarvestLevel(String, int, int)}.
+     * and {@link Block#setHarvestLevel(String, int, IBlockState)}.
      * 
      * @author Kenzie Togami
      */
