@@ -1,3 +1,4 @@
+language: java
 jdk:
   - oraclejdk7
   - openjdk7
@@ -5,6 +6,7 @@ jdk:
 before_install: chmod +x gradlew
 install: ./gradlew setupCIWorkspace -S
 script: ./gradlew build -S
+after_success: ./gradlew uploadArchives -S
 
 env:
   global:
@@ -13,3 +15,4 @@ env:
 cache:
     directories:
     - $HOME/.gradle
+sudo: false
