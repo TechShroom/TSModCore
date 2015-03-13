@@ -39,6 +39,11 @@ ext._property = { prop ->
     return null
 }
 
+ext.branch = _property("TRAVIS_BRANCH")
+if (!(branch.startsWith("version") || branch == "master")) {
+    System.exit(0)
+}
+
 ext.setIfUnset = { prop, value ->
     if (!hasProperty(prop)) {
         ext[prop] = value
