@@ -179,7 +179,7 @@ task deobfJar(type: Jar) {
 artifacts {
     archives sourceJar, javadocJar, deobfJar
 }
-ext.TRAVIS = !_hasProperty("TRAVIS") || !_property("TRAVIS").toBoolean()
+ext.TRAVIS = _hasProperty("TRAVIS") && _property("TRAVIS").toBoolean()
 ext.SECURITY = !TRAVIS
 apply plugin: 'maven'
 if (SECURITY) {
