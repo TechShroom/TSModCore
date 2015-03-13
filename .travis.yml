@@ -11,7 +11,7 @@ env:
   global:
   - TERM=dumb
   - secure: SiA5vewG8chZ1YIB7pqNB9sZn+B80TDvnE/h/JC0VN2iQzTroHAbN/CwxNanE4191GA0QShZ3UgpFEMzRURR8h819mN/WDSo4bRY5JrTqBgxIkjpLp5T9m+Vj3lA9aVFAsjPH93iUvbLQBTwoh4+A1ta2OSV4rxonO1z6Ne+6d8=
-  - secure: GjbZNmVBOmc78VT1olOWC2aQICmqXrDnO6tuZjSdd+0RgHKE42DDEMQRPo4Z9LItQNMRfYV7lyyR6R2QyAQyzWlYcNocelBgeQc0p7oycoZGhK2JnpnwTOcEuUrs8v4Ti/Qy7BEMhKCL04IXPO8oPnPVEXrWdcwLwINRkLrRTQA=
+  - secure: dQoczhZNuMeV6yjNahvLfg8PhzyrduMUyaaQy2mic7/aNFSxZwxtoJzDaMce9opHF1u0HLyT/4JKrFOcrfhmBNDtw7bFwppfy8pzINm47mcazlCF60abdo+XfVu93l7J9GrNe99uta0HidaxZO1kwgbdhqWAgcYvmRRWgKnsUoA=
 cache:
   directories:
   - "$HOME/.gradle"
