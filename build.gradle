@@ -179,10 +179,14 @@ task deobfJar(type: Jar) {
 artifacts {
     archives sourceJar, javadocJar, deobfJar
 }
+ext.TRAVIS = !_hasProperty("TRAVIS") || !_property("TRAVIS").toBoolean()
+ext.SECURITY = !TRAVIS
 apply plugin: 'maven'
 apply plugin: 'signing'
-signing {
-    sign configurations.archives
+if (SECURITY) {
+    signing {
+        sign configurations.archives
+    }
 }
 uploadArchives {
   repositories {
@@ -227,7 +231,4 @@ uploadArchives {
     }
   }
 }
-tasks.getByName('uploadArchives').onlyIf {
-    (!_hasProperty("TRAVIS") || !_property("TRAVIS").toBoolean()) ||
-    (version.endWith("SNAPSHOT") && _property("ossrhUsername") != null && _property("ossrhPassword") != null)
-}
+tasks.getByName('uploadArchives').onlyIf { TRAVIS && SECURITY }
