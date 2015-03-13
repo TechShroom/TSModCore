@@ -39,6 +39,15 @@ ext._property = { prop ->
     return null
 }
 
+ext.setIfUnset = { prop, value ->
+    if (!hasProperty(prop)) {
+        ext[prop] = value
+    }
+}
+
+setIfUnset("ossrhUsername", _property("ossrhUsername"))
+setIfUnset("ossrhPassword", _property("ossrhPassword"))
+
 repositories {
     maven {
         name "chickenbones"
@@ -170,7 +179,6 @@ task deobfJar(type: Jar) {
 artifacts {
     archives sourceJar, javadocJar, deobfJar
 }
-if (!_hasProperty("TRAVIS") || !_property("TRAVIS").toBoolean()) { //temp until we secure it
 apply plugin: 'maven'
 apply plugin: 'signing'
 signing {
@@ -219,4 +227,10 @@ uploadArchives {
     }
   }
 }
+tasks.getByName('uploadArchives').onlyIf { 
+    // NOT TRAVIS
+    (!_hasProperty("TRAVIS") || !_property("TRAVIS").toBoolean())
+    || // OR
+    // SNAPSHOT
+    (version.endWith("SNAPSHOT") && _property("ossrhUsername") != null && _property("ossrhPassword") != null)
 }
