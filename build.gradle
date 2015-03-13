@@ -74,7 +74,7 @@ configFile.withReader {
 }
 
 dependencies {
-    compile "codechicken:CodeChickenLib:${config.mc.version}-${config.ccl.version}:dev"
+    compile "codechicken:CodeChickenLib:${config.mc.version.normal}-${config.ccl.version}:dev"
     compile "com.techshroom:StepBuilder:${config.sb.version}"
 
     testCompile "junit:junit:4.11"
@@ -84,7 +84,7 @@ version =  "${config.mc.version.mod}.${config.mod.version}"
 
 // Setup the forge minecraft plugin data. Specify the preferred forge/minecraft version here
 minecraft {
-    version = config.mc.version + "-" + config.forge.version
+    version = config.mc.version.normal + "-" + config.forge.version
     println version
     if (file('../run').exists()) {
         runDir = "../run"
@@ -140,7 +140,7 @@ processResources {
         include '**.info'
         filter(ReplaceTokens, tokens: [
             'VERSION': config.mod.version,
-            'MC_VERSION': config.mc.version,
+            'MC_VERSION': config.mc.version.normal,
             'FORGE_VERSION': config.forge.version,
             'CCL_VERSION': config.ccl.version,
             'MODID': config.mod.id,
@@ -168,7 +168,7 @@ task javadocJar(type: Jar) {
 task deobfJar(type: Jar) {
     from sourceSets.main.output
     classifier = 'dev'
-    version = "${project.minecraft.version}-${project.version}"
+    version = "${project.version}"
     manifest {
         attributes 'FMLCorePlugin': 'codechicken.core.launch.DepLoader'
         attributes 'FMLCorePluginContainsFMLMod': 'true'
@@ -227,10 +227,7 @@ uploadArchives {
     }
   }
 }
-tasks.getByName('uploadArchives').onlyIf { 
-    // NOT TRAVIS
-    (!_hasProperty("TRAVIS") || !_property("TRAVIS").toBoolean())
-    || // OR
-    // SNAPSHOT
+tasks.getByName('uploadArchives').onlyIf {
+    (!_hasProperty("TRAVIS") || !_property("TRAVIS").toBoolean()) ||
     (version.endWith("SNAPSHOT") && _property("ossrhUsername") != null && _property("ossrhPassword") != null)
 }
