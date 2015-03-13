@@ -231,4 +231,3 @@ uploadArchives {
     }
   }
 }
-tasks.getByName('uploadArchives').onlyIf { TRAVIS && SECURITY }
