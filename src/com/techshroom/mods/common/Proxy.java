@@ -10,7 +10,6 @@ import java.util.Set;
 
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.FMLModContainer;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.LoaderState;
@@ -529,7 +528,7 @@ public class Proxy {
         try {
             regObjHook(regObj);
         } catch (Throwable e) {
-            FMLLog.getLogger().error("RegisterableObject<?> " + regObj
+            logger.error("RegisterableObject<?> " + regObj
                                              + " failed register hook", e);
         }
     }
