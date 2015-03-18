@@ -41,7 +41,7 @@ ext._property = { prop ->
 
 ext.branch = _property("TRAVIS_BRANCH")
 if (branch && !(branch.startsWith("version") || branch == "master")) {
-    System.exit(0)
+    ext.fail = true
 }
 
 ext.setIfUnset = { prop, value ->
@@ -193,6 +193,7 @@ if (SECURITY) {
         sign configurations.archives
     }
 }
+tasks.getByName("uploadArchives").onlyIf { !ext.fail }
 uploadArchives {
   repositories {
     mavenDeployer {
