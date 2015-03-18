@@ -193,7 +193,7 @@ if (SECURITY) {
         sign configurations.archives
     }
 }
-tasks.getByName("uploadArchives").onlyIf { hasProperty("fail") && !fail }
+tasks.getByName("uploadArchives").onlyIf { !hasProperty("fail") || !fail }
 uploadArchives {
   repositories {
     mavenDeployer {
