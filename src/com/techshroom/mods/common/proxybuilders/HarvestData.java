@@ -15,7 +15,7 @@ import com.techshroom.mods.common.java8.optional.OptionalInt;
 public class HarvestData {
     /**
      * Extension of HarvestData for {@link Block#setHarvestLevel(String, int)}
-     * and {@link Block#setHarvestLevel(String, int, IBlockState)}.
+     * and {@link Block#setHarvestLevel(String, int, int)}.
      * 
      * @author Kenzie Togami
      */
