@@ -2,11 +2,11 @@ package com.techshroom.mods.common.test;
 
 import java.util.Arrays;
 
-import net.minecraftforge.fml.common.DummyModContainer;
-import net.minecraftforge.fml.common.ModMetadata;
-
 import com.google.common.collect.ImmutableList;
 import com.techshroom.mods.common.Proxy;
+
+import cpw.mods.fml.common.DummyModContainer;
+import cpw.mods.fml.common.ModMetadata;
 
 /**
  * Proxy mod container.

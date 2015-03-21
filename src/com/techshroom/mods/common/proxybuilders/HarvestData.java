@@ -2,7 +2,6 @@ package com.techshroom.mods.common.proxybuilders;
 
 import static com.google.common.base.Preconditions.*;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 
 import com.google.common.base.Objects;
 import com.techshroom.mods.common.java8.function.Consumer;

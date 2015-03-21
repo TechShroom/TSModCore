@@ -6,9 +6,6 @@ import java.lang.reflect.Field;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Objects.ToStringHelper;
@@ -17,6 +14,10 @@ import com.google.common.base.Throwables;
 import com.techshroom.mods.common.Proxy.State;
 import com.techshroom.mods.common.java8.optional.OptionalFloat;
 import com.techshroom.mods.common.java8.optional.OptionalInt;
+
+import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * Builder for items.

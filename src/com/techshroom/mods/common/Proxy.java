@@ -9,12 +9,6 @@ import java.util.Map;
 import java.util.Set;
 
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.FMLModContainer;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.LoaderState;
-import net.minecraftforge.fml.common.LoaderState.ModState;
-import net.minecraftforge.fml.common.event.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,6 +22,13 @@ import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.techshroom.mods.common.proxybuilders.RegisterableObject;
+
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.FMLModContainer;
+import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.LoaderState;
+import cpw.mods.fml.common.LoaderState.ModState;
+import cpw.mods.fml.common.event.*;
 
 /**
  * Core proxy class for mods to extend.

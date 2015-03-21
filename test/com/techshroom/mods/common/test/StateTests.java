@@ -5,11 +5,11 @@ import static org.junit.Assert.*;
 import java.util.EnumSet;
 import java.util.Set;
 
-import net.minecraftforge.fml.common.LoaderState;
-
 import org.junit.Test;
 
 import com.techshroom.mods.common.Proxy.State;
+
+import cpw.mods.fml.common.LoaderState;
 
 /**
  * Tests for {@link State}.
